@@ -3,6 +3,7 @@ const Post = require('../models/Post');
 const createPost = async (req, res) => {
     const { title, content, sender } = req.body;
     try {
+        console.log(req.body);
         const post = new Post({ title, content, sender });
         await post.save();
         res.status(201).json(post);
@@ -44,7 +45,6 @@ const updatePost = async (req, res) => {
         if (!post) return res.status(404).json({ message: 'Post not found' });
         post.title = title;
         post.content = content;
-        post.sender = sender;
         await post.save();
         res.json(post);
     } catch (err) {

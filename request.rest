@@ -1,0 +1,27 @@
+### createPost
+POST http://localhost:3000/api/posts
+Content-Type: application/json
+
+{
+  "title": "My First Post",
+  "content": "This is the content of the first post.",
+  "sender": "User1"
+}
+
+### Get All Posts
+GET http://localhost:3000/api/posts
+
+### Get a Post by ID
+GET http://localhost:3000/api/posts/6776b6e1b9f5af012a469cbc
+
+### Get Posts by Sender
+GET http://localhost:3000/api/posts?sender=User1
+
+### Update a Post
+PUT http://localhost:3000/api/posts/6776b6e1b9f5af012a469cbc
+Content-Type: application/json
+
+{
+  "title": "Updated Post",
+  "content": "This is the updated content."
+}
