@@ -6,7 +6,7 @@ router.post('/', postController.createPost);
 router.get('/', postController.getPosts); // Supports filtering by query
 router.get('/:id', postController.getPostById);
 router.get('/sender/:sender', postController.getPostsBySender);
-
+router.put('/:id', postController.updatePost);
 
 module.exports = router;
 
