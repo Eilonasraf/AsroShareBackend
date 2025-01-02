@@ -47,3 +47,7 @@ Content-Type: application/json
   "sender": "User2",
   "postId": "6776b6e1b9f5af012a469cbc"
 }
+
+### Delete Comment
+DELETE http://localhost:3000/api/posts/6776b6e1b9f5af012a469cbc/comments/6776b6e1b9f5af012a469cbd
+
