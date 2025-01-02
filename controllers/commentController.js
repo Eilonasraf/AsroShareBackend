@@ -44,12 +44,22 @@ const deleteComment = async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
-}
+};
+
+const getCommentsByPost = async (req, res) => {
+    try {
+        const comments = await Comment.find({ postId: req.params.postId });
+        res.json(comments);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
 
 
 module.exports = {
     createComment,
     getCommentById,
     updateComment,
-    deleteComment
+    deleteComment,
+    getCommentsByPost
 };
