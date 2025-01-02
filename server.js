@@ -18,8 +18,10 @@ app.get('/', (req, res) => {
 });
 
 const postRoutes = require('./routes/PostRoute'); // Routes related to posts
+const commentRoutes = require('./routes/CommentRoute'); // Routes related to comments
 
 app.use('/api/posts', postRoutes); // Example: POST /api/posts or GET /api/posts
+app.use('/api/comments', commentRoutes); // Example: POST /api/comments or GET /api/comments
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
