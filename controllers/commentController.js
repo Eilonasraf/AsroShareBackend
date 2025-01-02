@@ -14,6 +14,7 @@ const createComment = async (req, res) => {
 const getCommentById = async (req, res) => {
     try {
         const comment = await Comment.findById(req.params.id);
+        if (!comment) return res.status(404).json({ message: 'Comment not found' });
         res.status(200).json(comment);
     } catch (err) {
         res.status(404).json({ error: err.message });
@@ -39,7 +40,7 @@ const deleteComment = async (req, res) => {
     try {
         const comment = await Comment.findById(req.params.id);
         if (!comment) return res.status(404).json({ message: 'Comment not found' });
-        await comment.remove();
+        await Comment.deleteOne({ _id: req.params.id });
         res.json({ message: 'Comment deleted' });
     } catch (err) {
         res.status(500).json({ error: err.message });
