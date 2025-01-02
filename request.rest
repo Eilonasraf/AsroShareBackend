@@ -37,3 +37,13 @@ Content-Type: application/json
 
 ### Get Comment By Id
 GET http://localhost:3000/api/posts/6776b6e1b9f5af012a469cbc/comments/6776b6e1b9f5af012a469cbd
+
+### Update Comment
+PUT http://localhost:3000/api/posts/6776b6e1b9f5af012a469cbc/comments/6776b6e1b9f5af012a469cbd
+Content-Type: application/json
+
+{
+  "content": "This is the updated comment.",
+  "sender": "User2",
+  "postId": "6776b6e1b9f5af012a469cbc"
+}
