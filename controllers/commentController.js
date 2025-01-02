@@ -11,6 +11,16 @@ const createComment = async (req, res) => {
     }
 };
 
+const getCommentById = async (req, res) => {
+    try {
+        const comment = await Comment.findById(req.params.id);
+        res.status(200).json(comment);
+    } catch (err) {
+        res.status(404).json({ error: err.message });
+    }
+};
+
 module.exports = {
-    createComment
+    createComment,
+    getCommentById
 };

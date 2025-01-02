@@ -34,3 +34,6 @@ Content-Type: application/json
   "content": "This is a comment on the post.",
   "sender": "User2"
 }
+
+### Get Comment By Id
+GET http://localhost:3000/api/posts/6776b6e1b9f5af012a469cbc/comments/6776b6e1b9f5af012a469cbd
