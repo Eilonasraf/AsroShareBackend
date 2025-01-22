@@ -12,13 +12,13 @@ Content-Type: application/json
 GET http://localhost:3000/api/posts
 
 ### Get a Post by ID
-GET http://localhost:3000/api/posts/6776ca6016747645178c199e
+GET http://localhost:3000/api/posts/6776b6e1b9f5af012a469cbc
 
 ### Get Posts by Sender
-GET http://localhost:3000/api/posts?sender=User1
+GET http://localhost:3000/api/posts/sender/User1
 
 ### Update a Post
-PUT http://localhost:3000/api/posts/6776ca6016747645178c199e
+PUT http://localhost:3000/api/posts/6776b6e1b9f5af012a469cbc
 Content-Type: application/json
 
 {
