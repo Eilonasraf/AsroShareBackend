@@ -1,30 +1,39 @@
 // Eilon-Asraf-318217619-Arel-Gabay-209626274
 
 const express = require('express');
+const dotenv = require('dotenv').config();
 const mongoose = require('mongoose');
 
-const app = express();
-const port = 3000;
 
-// Middleware to parse JSON bodies
-app.use(express.json());
+const promise = new Promise((resolve, reject) => {
+  const db = mongoose.connection;
+  db.on('error', (error) => console.log(error));
+  db.once('open', () => console.log('Connected to Database'));
 
-mongoose
-  .connect('mongodb://localhost:27017/WebDB') // The MongoDB database connection string
-  .then(() => console.log('Connected to MongoDB on localhost')) // Log on successful connection
-  .catch(err => console.error('MongoDB connection error:', err)); // Log any connection errors
+  mongoose.connect(process.env.DATABASE_URL)
+  .catch((error) => console.error('MongoDB connection error:', error))
+  .then(() => {
+    console.log('Connected to Database');
 
+    const app = express();
 
-app.get('/', (req, res) => {
-    res.send('Hello World!');
+    app.use(express.json());
+    // app.use(express.urlencoded({ extended: true }));
+
+    const indexRouter = require('./routes/IndexRoute');
+    app.use('/', indexRouter);
+
+    const postRouter = require('./routes/PostRoute');
+    app.use('/api/posts', postRouter);
+
+    const commentRouter = require('./routes/CommentRoute');
+    app.use('/api/comments', commentRouter);
+
+    resolve(app);
+  })
+  .catch((error) => {
+    console.log(error);
+  });
 });
 
-const postRoutes = require('./routes/PostRoute'); // Routes related to posts
-const commentRoutes = require('./routes/CommentRoute'); // Routes related to comments
-
-app.use('/api/posts', postRoutes); // Example: POST /api/posts or GET /api/posts
-app.use('/api/comments', commentRoutes); // Example: POST /api/comments or GET /api/comments
-
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-});
+module.exports = promise; // Export the promise
