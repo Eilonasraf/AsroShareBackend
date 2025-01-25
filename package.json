@@ -1,6 +1,18 @@
 {
   "dependencies": {
+    "@hapi/joi": "^17.1.1",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "mongoose": "^8.9.3"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "devstart": "nodemon server.js",
+    "test": "jest --detectOpenHandles --coverage --runInBand --forceExit",
+    "test:post": "jest post.test.js --detectOpenHandles --coverage --runInBand --forceExit",
+    "test:comment": "jest comment.test.js --detectOpenHandles --coverage --runInBand --forceExit"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
   }
 }

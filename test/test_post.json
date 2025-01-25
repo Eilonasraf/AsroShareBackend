@@ -1,0 +1,17 @@
+[
+    {
+        "title": "1",
+        "content": "Post 1",
+        "sender": "User 1"
+    },
+    {
+        "title": "2",
+        "content": "Post 2",
+        "sender": "User 2"
+    },
+    {
+        "title": "3",
+        "content": "Post 3",
+        "sender": "User 3"
+    }
+]
