@@ -1,136 +1,147 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1737833036292" clover="3.2.0">
-  <project timestamp="1737833036292" name="All files">
-    <metrics statements="125" coveredstatements="122" conditionals="10" coveredconditionals="10" methods="17" coveredmethods="13" elements="152" coveredelements="145" complexity="0" loc="125" ncloc="125" packages="4" files="8" classes="8"/>
-    <package name="Web-Application-Development">
-      <metrics statements="21" coveredstatements="19" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="3"/>
-      <file name="server.js" path="/Users/arelgabay/Desktop/WebApplicationDevelopment/Web-Application-Development/server.js">
-        <metrics statements="21" coveredstatements="19" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="3"/>
-        <line num="1" count="2" type="stmt"/>
-        <line num="2" count="2" type="stmt"/>
+<coverage generated="1738532168784" clover="3.2.0">
+  <project timestamp="1738532168784" name="All files">
+    <metrics statements="136" coveredstatements="132" conditionals="6" coveredconditionals="5" methods="23" coveredmethods="22" elements="165" coveredelements="159" complexity="0" loc="136" ncloc="136" packages="4" files="8" classes="8"/>
+    <package name="src">
+      <metrics statements="22" coveredstatements="19" conditionals="1" coveredconditionals="0" methods="2" coveredmethods="2"/>
+      <file name="server.ts" path="/Users/arelgabay/Desktop/Web-Application-Development/src/server.ts">
+        <metrics statements="22" coveredstatements="19" conditionals="1" coveredconditionals="0" methods="2" coveredmethods="2"/>
         <line num="3" count="2" type="stmt"/>
-        <line num="6" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
         <line num="7" count="2" type="stmt"/>
-        <line num="8" count="2" type="stmt"/>
-        <line num="9" count="2" type="stmt"/>
+        <line num="10" count="2" type="stmt"/>
         <line num="11" count="2" type="stmt"/>
-        <line num="12" count="0" type="stmt"/>
-        <line num="14" count="2" type="stmt"/>
+        <line num="12" count="2" type="stmt"/>
         <line num="16" count="2" type="stmt"/>
-        <line num="18" count="2" type="stmt"/>
+        <line num="17" count="2" type="cond" truecount="0" falsecount="1"/>
+        <line num="18" count="0" type="stmt"/>
         <line num="21" count="2" type="stmt"/>
         <line num="22" count="2" type="stmt"/>
-        <line num="24" count="2" type="stmt"/>
+        <line num="23" count="2" type="stmt"/>
         <line num="25" count="2" type="stmt"/>
-        <line num="27" count="2" type="stmt"/>
-        <line num="28" count="2" type="stmt"/>
+        <line num="26" count="2" type="stmt"/>
+        <line num="29" count="2" type="stmt"/>
         <line num="30" count="2" type="stmt"/>
-        <line num="33" count="0" type="stmt"/>
-        <line num="37" count="2" type="stmt"/>
+        <line num="31" count="2" type="stmt"/>
+        <line num="33" count="2" type="stmt"/>
+        <line num="35" count="0" type="stmt"/>
+        <line num="36" count="0" type="stmt"/>
+        <line num="40" count="2" type="stmt"/>
       </file>
     </package>
-    <package name="Web-Application-Development.controllers">
-      <metrics statements="75" coveredstatements="75" conditionals="10" coveredconditionals="10" methods="10" coveredmethods="10"/>
-      <file name="commentController.js" path="/Users/arelgabay/Desktop/WebApplicationDevelopment/Web-Application-Development/controllers/commentController.js">
-        <metrics statements="38" coveredstatements="38" conditionals="6" coveredconditionals="6" methods="5" coveredmethods="5"/>
-        <line num="1" count="2" type="stmt"/>
-        <line num="3" count="2" type="stmt"/>
+    <package name="src.controllers">
+      <metrics statements="85" coveredstatements="85" conditionals="5" coveredconditionals="5" methods="20" coveredmethods="20"/>
+      <file name="commentController.ts" path="/Users/arelgabay/Desktop/Web-Application-Development/src/controllers/commentController.ts">
+        <metrics statements="44" coveredstatements="44" conditionals="3" coveredconditionals="3" methods="10" coveredmethods="10"/>
+        <line num="2" count="2" type="stmt"/>
         <line num="4" count="2" type="stmt"/>
         <line num="5" count="2" type="stmt"/>
         <line num="6" count="2" type="stmt"/>
         <line num="7" count="2" type="stmt"/>
-        <line num="8" count="1" type="stmt"/>
-        <line num="10" count="1" type="stmt"/>
-        <line num="14" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
         <line num="15" count="3" type="stmt"/>
         <line num="16" count="3" type="stmt"/>
-        <line num="17" count="2" type="cond" truecount="2" falsecount="0"/>
-        <line num="18" count="1" type="stmt"/>
+        <line num="17" count="3" type="stmt"/>
+        <line num="18" count="2" type="cond" truecount="1" falsecount="0"/>
+        <line num="19" count="1" type="stmt"/>
         <line num="20" count="1" type="stmt"/>
-        <line num="24" count="2" type="stmt"/>
-        <line num="25" count="3" type="stmt"/>
-        <line num="26" count="3" type="stmt"/>
-        <line num="27" count="3" type="stmt"/>
-        <line num="28" count="3" type="cond" truecount="2" falsecount="0"/>
-        <line num="29" count="2" type="stmt"/>
-        <line num="30" count="2" type="stmt"/>
-        <line num="31" count="2" type="stmt"/>
-        <line num="32" count="2" type="stmt"/>
+        <line num="22" count="1" type="stmt"/>
+        <line num="24" count="1" type="stmt"/>
+        <line num="28" count="3" type="stmt"/>
+        <line num="29" count="3" type="stmt"/>
+        <line num="30" count="3" type="stmt"/>
+        <line num="31" count="3" type="stmt"/>
+        <line num="32" count="3" type="cond" truecount="1" falsecount="0"/>
         <line num="33" count="1" type="stmt"/>
-        <line num="35" count="1" type="stmt"/>
+        <line num="34" count="1" type="stmt"/>
+        <line num="36" count="2" type="stmt"/>
+        <line num="37" count="2" type="stmt"/>
+        <line num="38" count="2" type="stmt"/>
         <line num="39" count="2" type="stmt"/>
-        <line num="40" count="3" type="stmt"/>
-        <line num="41" count="3" type="stmt"/>
-        <line num="42" count="2" type="cond" truecount="2" falsecount="0"/>
-        <line num="43" count="1" type="stmt"/>
-        <line num="44" count="1" type="stmt"/>
-        <line num="46" count="1" type="stmt"/>
-        <line num="50" count="2" type="stmt"/>
-        <line num="51" count="2" type="stmt"/>
-        <line num="52" count="2" type="stmt"/>
+        <line num="40" count="1" type="stmt"/>
+        <line num="42" count="1" type="stmt"/>
+        <line num="46" count="3" type="stmt"/>
+        <line num="47" count="3" type="stmt"/>
+        <line num="48" count="3" type="stmt"/>
+        <line num="49" count="2" type="cond" truecount="1" falsecount="0"/>
+        <line num="50" count="1" type="stmt"/>
+        <line num="51" count="1" type="stmt"/>
         <line num="53" count="1" type="stmt"/>
-        <line num="55" count="1" type="stmt"/>
+        <line num="54" count="1" type="stmt"/>
+        <line num="56" count="1" type="stmt"/>
         <line num="60" count="2" type="stmt"/>
+        <line num="61" count="2" type="stmt"/>
+        <line num="62" count="2" type="stmt"/>
+        <line num="63" count="1" type="stmt"/>
+        <line num="65" count="1" type="stmt"/>
+        <line num="69" count="2" type="stmt"/>
       </file>
-      <file name="postController.js" path="/Users/arelgabay/Desktop/WebApplicationDevelopment/Web-Application-Development/controllers/postController.js">
-        <metrics statements="37" coveredstatements="37" conditionals="4" coveredconditionals="4" methods="5" coveredmethods="5"/>
-        <line num="1" count="2" type="stmt"/>
-        <line num="3" count="2" type="stmt"/>
+      <file name="postController.ts" path="/Users/arelgabay/Desktop/Web-Application-Development/src/controllers/postController.ts">
+        <metrics statements="41" coveredstatements="41" conditionals="2" coveredconditionals="2" methods="10" coveredmethods="10"/>
+        <line num="2" count="2" type="stmt"/>
         <line num="4" count="3" type="stmt"/>
         <line num="5" count="3" type="stmt"/>
         <line num="6" count="3" type="stmt"/>
         <line num="7" count="3" type="stmt"/>
         <line num="8" count="3" type="stmt"/>
-        <line num="9" count="2" type="stmt"/>
-        <line num="11" count="1" type="stmt"/>
-        <line num="15" count="2" type="stmt"/>
+        <line num="9" count="3" type="stmt"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
         <line num="16" count="2" type="stmt"/>
         <line num="17" count="2" type="stmt"/>
-        <line num="18" count="1" type="stmt"/>
-        <line num="20" count="1" type="stmt"/>
-        <line num="24" count="2" type="stmt"/>
+        <line num="18" count="2" type="stmt"/>
+        <line num="19" count="1" type="stmt"/>
+        <line num="21" count="1" type="stmt"/>
         <line num="25" count="3" type="stmt"/>
         <line num="26" count="3" type="stmt"/>
-        <line num="27" count="2" type="cond" truecount="2" falsecount="0"/>
-        <line num="28" count="1" type="stmt"/>
+        <line num="27" count="3" type="stmt"/>
+        <line num="28" count="2" type="cond" truecount="1" falsecount="0"/>
+        <line num="29" count="1" type="stmt"/>
         <line num="30" count="1" type="stmt"/>
-        <line num="33" count="2" type="stmt"/>
-        <line num="34" count="2" type="stmt"/>
-        <line num="35" count="2" type="stmt"/>
-        <line num="36" count="1" type="stmt"/>
-        <line num="38" count="1" type="stmt"/>
-        <line num="41" count="2" type="stmt"/>
-        <line num="42" count="3" type="stmt"/>
-        <line num="43" count="3" type="stmt"/>
-        <line num="44" count="3" type="stmt"/>
-        <line num="45" count="2" type="cond" truecount="2" falsecount="0"/>
-        <line num="46" count="1" type="stmt"/>
-        <line num="47" count="1" type="stmt"/>
-        <line num="48" count="1" type="stmt"/>
-        <line num="49" count="1" type="stmt"/>
+        <line num="32" count="1" type="stmt"/>
+        <line num="34" count="1" type="stmt"/>
+        <line num="37" count="2" type="stmt"/>
+        <line num="38" count="2" type="stmt"/>
+        <line num="39" count="2" type="stmt"/>
+        <line num="40" count="1" type="stmt"/>
+        <line num="42" count="1" type="stmt"/>
+        <line num="45" count="3" type="stmt"/>
+        <line num="46" count="3" type="stmt"/>
+        <line num="47" count="3" type="stmt"/>
+        <line num="48" count="3" type="stmt"/>
+        <line num="49" count="2" type="cond" truecount="1" falsecount="0"/>
         <line num="50" count="1" type="stmt"/>
-        <line num="52" count="1" type="stmt"/>
-        <line num="56" count="2" type="stmt"/>
+        <line num="51" count="1" type="stmt"/>
+        <line num="53" count="1" type="stmt"/>
+        <line num="54" count="1" type="stmt"/>
+        <line num="55" count="1" type="stmt"/>
+        <line num="56" count="1" type="stmt"/>
+        <line num="57" count="1" type="stmt"/>
+        <line num="59" count="1" type="stmt"/>
+        <line num="64" count="2" type="stmt"/>
       </file>
     </package>
-    <package name="Web-Application-Development.models">
+    <package name="src.models">
       <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-      <file name="Comments.js" path="/Users/arelgabay/Desktop/WebApplicationDevelopment/Web-Application-Development/models/Comments.js">
+      <file name="Comments.ts" path="/Users/arelgabay/Desktop/Web-Application-Development/src/models/Comments.ts">
         <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="2" type="stmt"/>
         <line num="3" count="2" type="stmt"/>
         <line num="9" count="2" type="stmt"/>
       </file>
-      <file name="Post.js" path="/Users/arelgabay/Desktop/WebApplicationDevelopment/Web-Application-Development/models/Post.js">
+      <file name="Post.ts" path="/Users/arelgabay/Desktop/Web-Application-Development/src/models/Post.ts">
         <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="2" type="stmt"/>
         <line num="3" count="2" type="stmt"/>
         <line num="9" count="2" type="stmt"/>
       </file>
     </package>
-    <package name="Web-Application-Development.routes">
+    <package name="src.routes">
       <metrics statements="23" coveredstatements="22" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
-      <file name="CommentRoute.js" path="/Users/arelgabay/Desktop/WebApplicationDevelopment/Web-Application-Development/routes/CommentRoute.js">
+      <file name="CommentRoute.ts" path="/Users/arelgabay/Desktop/Web-Application-Development/src/routes/CommentRoute.ts">
         <metrics statements="9" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="2" type="stmt"/>
         <line num="2" count="2" type="stmt"/>
@@ -142,7 +153,7 @@
         <line num="9" count="2" type="stmt"/>
         <line num="11" count="2" type="stmt"/>
       </file>
-      <file name="IndexRoute.js" path="/Users/arelgabay/Desktop/WebApplicationDevelopment/Web-Application-Development/routes/IndexRoute.js">
+      <file name="IndexRoute.ts" path="/Users/arelgabay/Desktop/Web-Application-Development/src/routes/IndexRoute.ts">
         <metrics statements="5" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
         <line num="1" count="2" type="stmt"/>
         <line num="2" count="2" type="stmt"/>
@@ -150,7 +161,7 @@
         <line num="5" count="0" type="stmt"/>
         <line num="8" count="2" type="stmt"/>
       </file>
-      <file name="PostRoute.js" path="/Users/arelgabay/Desktop/WebApplicationDevelopment/Web-Application-Development/routes/PostRoute.js">
+      <file name="PostRoute.ts" path="/Users/arelgabay/Desktop/Web-Application-Development/src/routes/PostRoute.ts">
         <metrics statements="9" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="2" type="stmt"/>
         <line num="2" count="2" type="stmt"/>
