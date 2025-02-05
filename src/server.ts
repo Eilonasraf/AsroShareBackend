@@ -10,6 +10,7 @@ dotenv.config();
 import indexRouter from './routes/IndexRoute';
 import postRouter from './routes/PostRoute';
 import commentRouter from './routes/CommentRoute';
+import authRouter from './routes/AuthRoute';
 
 
 // Create a function to initialize the server
@@ -29,6 +30,7 @@ const initializeServer = async (): Promise<Express> => {
     app.use('/', indexRouter);
     app.use('/api/posts', postRouter);
     app.use('/api/comments', commentRouter);
+    app.use('/api/auth', authRouter);
 
     return app;
   } catch (error) {
