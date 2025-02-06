@@ -1,9 +1,17 @@
 import mongoose from 'mongoose';
 
-const PostSchema = new mongoose.Schema({
+export interface IPost {
+    title: string;
+    content: string;
+    sender: string;
+}
+
+const PostSchema = new mongoose.Schema<IPost>({
     title: { type: String, required: true }, 
     content: { type: String, required: true }, 
     sender: { type: String, required: true }, 
-    });
+});
 
-export default mongoose.model('Post', PostSchema); // Export the model
+const postModel = mongoose.model<IPost>('Post', PostSchema);
+
+export default postModel;

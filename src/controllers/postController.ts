@@ -1,71 +1,48 @@
 import { Request, Response } from 'express';
-import postModel from '../models/Post';
+import postModel, { IPost } from '../models/Post';
+import baseController from './baseController';
 
-const createPost = async (req: Request, res: Response) => {
-    const { title, content, sender } = req.body;
-    try {
-        console.log(req.body);
-        const post = new postModel({ title, content, sender });
-        await post.save();
-        res.status(201).json(post);
-    } catch (err) {
-        res.status(500).json({ error: (err as Error).message });
+class PostsController extends baseController<IPost> {
+    constructor() {
+        super(postModel);
     }
-};
 
-const getPosts = async (req: Request, res: Response) => {
-    try {
-        const posts = await postModel.find();
-        res.status(200).json(posts);
-    } catch (err) {
-        res.status(500).json({ error: (err as Error).message });
-    }
-};
-
-const getPostById = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const post = await postModel.findById(req.params.id);
-        if (!post) {
-            res.status(404).json({ message: 'Post not found' });
-            return;
+    async createPost (req: Request, res: Response) {
+        const senderId = req.params.userId;
+        const post = {
+            title: req.body.title,
+            content: req.body.content,
+            sender: senderId
         }
-        res.json(post);
-    } catch (err) {
-        res.status(500).json({ error: (err as Error).message });
+        req.body = post;
+        super.create(req, res);
+    };
+
+    async getPosts (req: Request, res: Response) {
+        super.getAll(req, res);
+
+    };
+
+    async getPostById (req: Request, res: Response): Promise<void> {
+        super.getById(req, res);
+    };
+
+    async getPostsBySender (req: Request, res: Response) {
+        super.getAll(req, res);
     }
-};
-const getPostsBySender = async (req: Request, res: Response) => {
-    try {
-        const posts = await postModel.find({ sender: req.params.sender });
-        res.json(posts);
-    } catch (err) {
-        res.status(500).json({ error: (err as Error).message });
-    }
-}
-const updatePost = async (req: Request, res: Response): Promise<void> => {
-    const { title, content, sender } = req.body;
-    try {
-        const post = await postModel.findById(req.params.id);
-        if (!post) {
-            res.status(404).json({ message: 'Post not found' });
-            return;
-        }
-        post.title = title;
-        post.content = content;
-        post.sender = sender;
-        await post.save();
-        res.json(post);
-    } catch (err) {
-        res.status(500).json({ error: (err as Error).message });
-    }
+
+    async updatePost (req: Request, res: Response): Promise<void> {
+        const body = req.body;
+        const post = {
+            title: body.title,
+            content: body.content,
+            sender: body.sender
+        };
+        req.body = post;
+        super.update(req, res);
+    };
 };
 
 
-export default {
-    createPost,
-    getPosts,
-    getPostById,
-    getPostsBySender,
-    updatePost
-};
+export default new PostsController();
 
