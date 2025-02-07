@@ -1,14 +1,18 @@
 {
   "dependencies": {
     "@hapi/joi": "^17.1.1",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.7",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.9.3"
+    "mongoose": "^8.9.3",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "scripts": {
-    "start": "tsc && node ./dist/app.js",
+    "start": "tsc && node ./dist/src/app.js",
     "dev": "nodemon ./src/app.ts",
     "test": "tsc && jest --detectOpenHandles --coverage --runInBand --forceExit",
     "test:post": "tsc && jest post.test.ts --detectOpenHandles --coverage --runInBand --forceExit",

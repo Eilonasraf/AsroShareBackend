@@ -37,7 +37,7 @@ class CommentsController extends baseController<IComment> {
     };
 
     async getCommentsByPost (req: Request, res: Response) {
-        super.getAll(req, res);
+        super.getAll(req, res, 'postId');
     };
 };
 

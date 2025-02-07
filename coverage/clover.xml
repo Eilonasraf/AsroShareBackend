@@ -1,39 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1738786025122" clover="3.2.0">
-  <project timestamp="1738786025122" name="All files">
-    <metrics statements="276" coveredstatements="225" conditionals="38" coveredconditionals="18" methods="38" coveredmethods="37" elements="352" coveredelements="280" complexity="0" loc="276" ncloc="276" packages="4" files="12" classes="12"/>
+<coverage generated="1738947308947" clover="3.2.0">
+  <project timestamp="1738947308948" name="All files">
+    <metrics statements="282" coveredstatements="233" conditionals="38" coveredconditionals="19" methods="38" coveredmethods="37" elements="358" coveredelements="289" complexity="0" loc="282" ncloc="282" packages="4" files="12" classes="12"/>
     <package name="src">
-      <metrics statements="24" coveredstatements="21" conditionals="1" coveredconditionals="0" methods="2" coveredmethods="2"/>
+      <metrics statements="29" coveredstatements="26" conditionals="1" coveredconditionals="0" methods="2" coveredmethods="2"/>
       <file name="server.ts" path="/Users/arelgabay/Desktop/Web-Application-Development/src/server.ts">
-        <metrics statements="24" coveredstatements="21" conditionals="1" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <metrics statements="29" coveredstatements="26" conditionals="1" coveredconditionals="0" methods="2" coveredmethods="2"/>
         <line num="3" count="3" type="stmt"/>
         <line num="4" count="3" type="stmt"/>
         <line num="5" count="3" type="stmt"/>
+        <line num="6" count="3" type="stmt"/>
         <line num="7" count="3" type="stmt"/>
         <line num="10" count="3" type="stmt"/>
-        <line num="11" count="3" type="stmt"/>
-        <line num="12" count="3" type="stmt"/>
         <line num="13" count="3" type="stmt"/>
-        <line num="17" count="3" type="stmt"/>
-        <line num="18" count="3" type="cond" truecount="0" falsecount="1"/>
-        <line num="19" count="0" type="stmt"/>
-        <line num="22" count="3" type="stmt"/>
-        <line num="23" count="3" type="stmt"/>
-        <line num="24" count="3" type="stmt"/>
-        <line num="26" count="3" type="stmt"/>
-        <line num="27" count="3" type="stmt"/>
-        <line num="30" count="3" type="stmt"/>
-        <line num="31" count="3" type="stmt"/>
+        <line num="29" count="3" type="stmt"/>
         <line num="32" count="3" type="stmt"/>
         <line num="33" count="3" type="stmt"/>
+        <line num="34" count="3" type="stmt"/>
         <line num="35" count="3" type="stmt"/>
-        <line num="37" count="0" type="stmt"/>
-        <line num="38" count="0" type="stmt"/>
-        <line num="42" count="3" type="stmt"/>
+        <line num="39" count="3" type="stmt"/>
+        <line num="40" count="3" type="cond" truecount="0" falsecount="1"/>
+        <line num="41" count="0" type="stmt"/>
+        <line num="44" count="3" type="stmt"/>
+        <line num="45" count="3" type="stmt"/>
+        <line num="46" count="3" type="stmt"/>
+        <line num="48" count="3" type="stmt"/>
+        <line num="49" count="3" type="stmt"/>
+        <line num="52" count="3" type="stmt"/>
+        <line num="53" count="3" type="stmt"/>
+        <line num="54" count="3" type="stmt"/>
+        <line num="55" count="3" type="stmt"/>
+        <line num="56" count="3" type="stmt"/>
+        <line num="58" count="3" type="stmt"/>
+        <line num="60" count="0" type="stmt"/>
+        <line num="61" count="0" type="stmt"/>
+        <line num="65" count="3" type="stmt"/>
       </file>
     </package>
     <package name="src.controllers">
-      <metrics statements="207" coveredstatements="160" conditionals="37" coveredconditionals="18" methods="35" coveredmethods="35"/>
+      <metrics statements="208" coveredstatements="163" conditionals="37" coveredconditionals="19" methods="35" coveredmethods="35"/>
       <file name="authController.ts" path="/Users/arelgabay/Desktop/Web-Application-Development/src/controllers/authController.ts">
         <metrics statements="133" coveredstatements="88" conditionals="30" coveredconditionals="13" methods="17" coveredmethods="17"/>
         <line num="2" count="3" type="stmt"/>
@@ -171,7 +176,7 @@
         <line num="234" count="3" type="stmt"/>
       </file>
       <file name="baseController.ts" path="/Users/arelgabay/Desktop/Web-Application-Development/src/controllers/baseController.ts">
-        <metrics statements="45" coveredstatements="43" conditionals="7" coveredconditionals="5" methods="6" coveredmethods="6"/>
+        <metrics statements="46" coveredstatements="46" conditionals="7" coveredconditionals="6" methods="6" coveredmethods="6"/>
         <line num="7" count="6" type="cond" truecount="0" falsecount="1"/>
         <line num="8" count="6" type="stmt"/>
         <line num="9" count="6" type="stmt"/>
@@ -185,38 +190,39 @@
         <line num="22" count="2" type="stmt"/>
         <line num="27" count="6" type="stmt"/>
         <line num="28" count="6" type="stmt"/>
-        <line num="29" count="6" type="cond" truecount="1" falsecount="1"/>
-        <line num="30" count="0" type="stmt"/>
-        <line num="31" count="0" type="stmt"/>
-        <line num="33" count="6" type="stmt"/>
-        <line num="34" count="3" type="stmt"/>
-        <line num="37" count="3" type="stmt"/>
-        <line num="42" count="6" type="stmt"/>
-        <line num="43" count="6" type="stmt"/>
-        <line num="44" count="6" type="stmt"/>
-        <line num="45" count="4" type="cond" truecount="2" falsecount="0"/>
-        <line num="46" count="2" type="stmt"/>
-        <line num="48" count="2" type="stmt"/>
+        <line num="30" count="6" type="stmt"/>
+        <line num="31" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="33" count="4" type="stmt"/>
+        <line num="34" count="2" type="stmt"/>
+        <line num="36" count="2" type="stmt"/>
+        <line num="37" count="1" type="stmt"/>
+        <line num="40" count="3" type="stmt"/>
+        <line num="45" count="6" type="stmt"/>
+        <line num="46" count="6" type="stmt"/>
+        <line num="47" count="6" type="stmt"/>
+        <line num="48" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="49" count="2" type="stmt"/>
         <line num="51" count="2" type="stmt"/>
-        <line num="56" count="6" type="stmt"/>
-        <line num="57" count="6" type="stmt"/>
-        <line num="58" count="6" type="stmt"/>
-        <line num="59" count="4" type="cond" truecount="1" falsecount="0"/>
-        <line num="60" count="2" type="stmt"/>
-        <line num="61" count="2" type="stmt"/>
+        <line num="54" count="2" type="stmt"/>
+        <line num="59" count="6" type="stmt"/>
+        <line num="60" count="6" type="stmt"/>
+        <line num="61" count="6" type="stmt"/>
+        <line num="62" count="4" type="cond" truecount="1" falsecount="0"/>
         <line num="63" count="2" type="stmt"/>
         <line num="64" count="2" type="stmt"/>
-        <line num="65" count="2" type="stmt"/>
+        <line num="66" count="2" type="stmt"/>
         <line num="67" count="2" type="stmt"/>
-        <line num="72" count="3" type="stmt"/>
-        <line num="73" count="3" type="stmt"/>
-        <line num="74" count="2" type="cond" truecount="1" falsecount="0"/>
-        <line num="75" count="1" type="stmt"/>
-        <line num="76" count="1" type="stmt"/>
+        <line num="68" count="2" type="stmt"/>
+        <line num="70" count="2" type="stmt"/>
+        <line num="75" count="3" type="stmt"/>
+        <line num="76" count="3" type="stmt"/>
+        <line num="77" count="2" type="cond" truecount="1" falsecount="0"/>
         <line num="78" count="1" type="stmt"/>
         <line num="79" count="1" type="stmt"/>
         <line num="81" count="1" type="stmt"/>
-        <line num="86" count="3" type="stmt"/>
+        <line num="82" count="1" type="stmt"/>
+        <line num="84" count="1" type="stmt"/>
+        <line num="89" count="3" type="stmt"/>
       </file>
       <file name="commentController.ts" path="/Users/arelgabay/Desktop/Web-Application-Development/src/controllers/commentController.ts">
         <metrics statements="14" coveredstatements="14" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="6"/>
@@ -285,11 +291,11 @@
         <line num="1" count="3" type="stmt"/>
         <line num="2" count="3" type="stmt"/>
         <line num="3" count="3" type="stmt"/>
-        <line num="5" count="3" type="stmt"/>
-        <line num="7" count="3" type="stmt"/>
-        <line num="9" count="3" type="stmt"/>
-        <line num="11" count="3" type="stmt"/>
-        <line num="13" count="3" type="stmt"/>
+        <line num="57" count="3" type="stmt"/>
+        <line num="82" count="3" type="stmt"/>
+        <line num="113" count="3" type="stmt"/>
+        <line num="144" count="3" type="stmt"/>
+        <line num="146" count="3" type="stmt"/>
       </file>
       <file name="CommentRoute.ts" path="/Users/arelgabay/Desktop/Web-Application-Development/src/routes/CommentRoute.ts">
         <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
@@ -297,12 +303,12 @@
         <line num="2" count="3" type="stmt"/>
         <line num="3" count="3" type="stmt"/>
         <line num="4" count="3" type="stmt"/>
-        <line num="6" count="3" type="stmt"/>
-        <line num="7" count="3" type="stmt"/>
-        <line num="8" count="3" type="stmt"/>
-        <line num="9" count="3" type="stmt"/>
-        <line num="10" count="3" type="stmt"/>
-        <line num="12" count="3" type="stmt"/>
+        <line num="104" count="3" type="stmt"/>
+        <line num="145" count="3" type="stmt"/>
+        <line num="204" count="3" type="stmt"/>
+        <line num="230" count="3" type="stmt"/>
+        <line num="258" count="3" type="stmt"/>
+        <line num="260" count="3" type="stmt"/>
       </file>
       <file name="IndexRoute.ts" path="/Users/arelgabay/Desktop/Web-Application-Development/src/routes/IndexRoute.ts">
         <metrics statements="5" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
@@ -318,12 +324,12 @@
         <line num="2" count="3" type="stmt"/>
         <line num="3" count="3" type="stmt"/>
         <line num="4" count="3" type="stmt"/>
-        <line num="6" count="3" type="stmt"/>
-        <line num="7" count="3" type="stmt"/>
-        <line num="8" count="3" type="stmt"/>
-        <line num="9" count="3" type="stmt"/>
-        <line num="10" count="3" type="stmt"/>
-        <line num="12" count="3" type="stmt"/>
+        <line num="100" count="3" type="stmt"/>
+        <line num="121" count="3" type="stmt"/>
+        <line num="149" count="3" type="stmt"/>
+        <line num="177" count="3" type="stmt"/>
+        <line num="213" count="3" type="stmt"/>
+        <line num="215" count="3" type="stmt"/>
       </file>
     </package>
   </project>

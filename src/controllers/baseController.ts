@@ -23,20 +23,24 @@ class BaseController<T> {
         }
     };
 
-    async getAll (req: Request, res: Response) {
-        const filter = req.query.owner;
+    async getAll(req: Request, res: Response, filterKey: string) {
+        console.log(req.params);
+        const filterValue = req.params[filterKey]; // Get the filter value dynamically
+        console.log(`Filter [${filterKey}]:`, filterValue);
+    
         try {
-            if (filter) {
-                const item = await this.model.find({ owner: filter });
+            if (filterValue) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const item = await this.model.find({ [filterKey]: filterValue } as any); // Get items by filter
                 res.send(item);
             } else {
-                const items = await this.model.find();
+                const items = await this.model.find(); // Get all items
                 res.send(items);
             }
         } catch (err) {
             res.status(500).json({ error: (err as Error).message });
         }
-    };
+    }
 
     async getById (req: Request, res: Response): Promise<void> {
         const id = req.params.id;

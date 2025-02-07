@@ -19,7 +19,7 @@ class PostsController extends baseController<IPost> {
     };
 
     async getPosts (req: Request, res: Response) {
-        super.getAll(req, res);
+        super.getAll(req, res, "");
 
     };
 
@@ -28,7 +28,7 @@ class PostsController extends baseController<IPost> {
     };
 
     async getPostsBySender (req: Request, res: Response) {
-        super.getAll(req, res);
+        super.getAll(req, res, 'sender');
     }
 
     async updatePost (req: Request, res: Response): Promise<void> {
