@@ -3,8 +3,30 @@
 import express, { Express } from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import swaggerUi from 'swagger-ui-express';
+import swaggerJsdoc from 'swagger-jsdoc';
 
+// Load environment variables
 dotenv.config();
+
+// Swagger
+const options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'AstroShare API',
+      version: '1.0.0',
+      description: 'A simple AstroShare API documentation',
+    },
+    servers: [
+      {
+        url: 'http://localhost:' + process.env.PORT,
+      },
+    ],
+  },
+  apis: ['./src/routes/*.ts'],
+};
+const specs = swaggerJsdoc(options);
 
 // Import routes
 import indexRouter from './routes/IndexRoute';
@@ -31,6 +53,7 @@ const initializeServer = async (): Promise<Express> => {
     app.use('/api/posts', postRouter);
     app.use('/api/comments', commentRouter);
     app.use('/api/auth', authRouter);
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
     return app;
   } catch (error) {
