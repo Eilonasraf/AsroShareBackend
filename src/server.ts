@@ -35,6 +35,7 @@ import commentRouter from './routes/CommentRoute';
 import authRouter from './routes/AuthRoute';
 
 
+
 // Create a function to initialize the server
 const initializeServer = async (): Promise<Express> => {
   if (!process.env.DATABASE_URL) {
@@ -47,6 +48,13 @@ const initializeServer = async (): Promise<Express> => {
 
     const app = express();
     app.use(express.json());
+
+    app.use(function (req, res, next) {
+      res.header('Access-Control-Allow-Origin', '*');
+      res.header('Access-Control-Allow-Headers', '*');
+      res.header('Access-Control-Allow-Methods', '*');
+      next();
+    });
 
     // Use routers
     app.use('/', indexRouter);
