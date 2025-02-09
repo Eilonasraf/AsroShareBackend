@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
+import cors from 'cors';
 
 dotenv.config();
 
@@ -47,12 +48,14 @@ const initializeServer = async (): Promise<Express> => {
     const app = express();
     app.use(express.json());
 
-    app.use(function (req, res, next) {
-      res.header('Access-Control-Allow-Origin', '*');
-      res.header('Access-Control-Allow-Headers', '*');
-      res.header('Access-Control-Allow-Methods', '*');
-      next();
-    });
+    // Added CORS Middleware Properly
+    app.use(cors({
+      origin: ["http://localhost:5173", "https://yourfrontend.com"], // Change as needed
+      methods: ["GET", "POST", "PUT", "DELETE"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+      credentials: true, // Allow cookies from frontend
+    }));
+
 
     // Use routers
     app.use("/", indexRouter);
