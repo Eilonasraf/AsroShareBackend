@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">90% </span>
+                <span class="strong">92.1% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>27/30</span>
+                <span class='fraction'>35/38</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/2</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">89.65% </span>
+                <span class="strong">91.89% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>26/29</span>
+                <span class='fraction'>34/37</span>
             </div>
         
             
@@ -128,7 +128,16 @@
 <a name='L63'></a><a href='#L63'>63</a>
 <a name='L64'></a><a href='#L64'>64</a>
 <a name='L65'></a><a href='#L65'>65</a>
-<a name='L66'></a><a href='#L66'>66</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
@@ -163,7 +172,7 @@
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
@@ -178,7 +187,16 @@
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">44x</span>
+<span class="cline-any cline-yes">44x</span>
+<span class="cline-any cline-yes">44x</span>
+<span class="cline-any cline-yes">44x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
@@ -195,11 +213,11 @@
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// Eilon-Asraf-318217619-Arel-Gabay-209626274
 &nbsp;
-import express, { Express } from 'express';
-import dotenv from 'dotenv';
-import mongoose from 'mongoose';
-import swaggerUi from 'swagger-ui-express';
-import swaggerJsdoc from 'swagger-jsdoc';
+import express, { Express } from "express";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+import swaggerUi from "swagger-ui-express";
+import swaggerJsdoc from "swagger-jsdoc";
 &nbsp;
 // Load environment variables
 dotenv.config();
@@ -207,52 +225,61 @@ dotenv.config();
 // Swagger
 const options = {
   definition: {
-    openapi: '3.0.0',
+    openapi: "3.0.0",
     info: {
-      title: 'AstroShare API',
-      version: '1.0.0',
-      description: 'A simple AstroShare API documentation',
+      title: "AstroShare API",
+      version: "1.0.0",
+      description: "A simple AstroShare API documentation",
     },
     servers: [
       {
-        url: 'http://localhost:' + process.env.PORT,
+        url: "http://localhost:" + process.env.PORT,
       },
     ],
   },
-  apis: ['./src/routes/*.ts'],
+  apis: ["./src/routes/*.ts"],
 };
 const specs = swaggerJsdoc(options);
 &nbsp;
 // Import routes
-import indexRouter from './routes/IndexRoute';
-import postRouter from './routes/PostRoute';
-import commentRouter from './routes/CommentRoute';
-import authRouter from './routes/AuthRoute';
-&nbsp;
+import indexRouter from "./routes/IndexRoute";
+import postRouter from "./routes/PostRoute";
+import commentRouter from "./routes/CommentRoute";
+import authRouter from "./routes/AuthRoute";
+import fileRouter from "./routes/FileRoute";
 &nbsp;
 // Create a function to initialize the server
 const initializeServer = async (): Promise&lt;Express&gt; =&gt; {
   <span class="missing-if-branch" title="if path not taken" >I</span>if (!process.env.DATABASE_URL) {
-<span class="cstat-no" title="statement not covered" >    throw new Error('DATABASE_URL is not set');</span>
+<span class="cstat-no" title="statement not covered" >    throw new Error("DATABASE_URL is not set");</span>
   }
 &nbsp;
   try {
     await mongoose.connect(process.env.DATABASE_URL);
-    console.log('Connected to Database');
+    console.log("Connected to Database");
 &nbsp;
     const app = express();
     app.use(express.json());
 &nbsp;
+    app.use(function (req, res, next) {
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header("Access-Control-Allow-Headers", "*");
+      res.header("Access-Control-Allow-Methods", "*");
+      next();
+    });
+&nbsp;
     // Use routers
-    app.use('/', indexRouter);
-    app.use('/api/posts', postRouter);
-    app.use('/api/comments', commentRouter);
-    app.use('/api/auth', authRouter);
-    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+    app.use("/", indexRouter);
+    app.use("/api/posts", postRouter);
+    app.use("/api/comments", commentRouter);
+    app.use("/api/auth", authRouter);
+    app.use("/api/file", fileRouter);
+    app.use("/public", express.static("public"));
+    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 &nbsp;
     return app;
   } catch (error) {
-<span class="cstat-no" title="statement not covered" >    console.error('MongoDB connection error:', error);</span>
+<span class="cstat-no" title="statement not covered" >    console.error("MongoDB connection error:", error);</span>
 <span class="cstat-no" title="statement not covered" >    throw error;</span>
   }
 };
@@ -265,7 +292,7 @@ export default initializeServer;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-02-07T16:55:08.933Z
+                at 2025-02-09T15:00:09.641Z
             </div>
         <script src="../prettify.js"></script>
         <script>
