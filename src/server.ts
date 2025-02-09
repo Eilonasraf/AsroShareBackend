@@ -32,8 +32,7 @@ import indexRouter from './routes/IndexRoute';
 import postRouter from './routes/PostRoute';
 import commentRouter from './routes/CommentRoute';
 import authRouter from './routes/AuthRoute';
-
-
+import fileRouter from "./routes/FileRoute";
 
 // Create a function to initialize the server
 const initializeServer = async (): Promise<Express> => {
