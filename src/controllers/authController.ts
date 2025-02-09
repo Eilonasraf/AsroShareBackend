@@ -7,11 +7,10 @@ type Payload = {
     _id: string;
 };
 
-
 const register = async (req: Request, res: Response) => {
-    const { email, password } = req.body;
-    if (!email || !password) {
-        res.status(400).send('Email and password are required');
+    const { name, email, password } = req.body;
+    if (!name || !email || !password) {
+        res.status(400).send('Name, Email and password are required');
         return;
     }
     try {
@@ -19,11 +18,15 @@ const register = async (req: Request, res: Response) => {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         const newUser: IUser = await userModel.create({ 
+            name: name,
             email: email, 
             password: hashedPassword
         });
         console.log('New user:', newUser);
-        res.status(200).send(newUser);
+        res.status(200).send({
+            name: newUser.name, // Return name
+            email: newUser.email
+        });
         return;
 
     } catch (error) {  
@@ -93,6 +96,7 @@ const login = async (req: Request, res: Response) => {
         await user.save();
 
         res.status(200).send({
+            name: user.name,
             email: user.email,
             _id: user._id, 
             accessToken: accessToken,
