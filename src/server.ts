@@ -1,15 +1,13 @@
-// Eilon-Asraf-318217619-Arel-Gabay-209626274
-
 import express, { Express } from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
+import cors from "cors";
 
-// Load environment variables
 dotenv.config();
 
-// Swagger
+// Swagger setup
 const options = {
   definition: {
     openapi: '3.0.0',
@@ -34,9 +32,7 @@ import postRouter from './routes/PostRoute';
 import commentRouter from './routes/CommentRoute';
 import authRouter from './routes/AuthRoute';
 
-
-
-// Create a function to initialize the server
+// Initialize server
 const initializeServer = async (): Promise<Express> => {
   if (!process.env.DATABASE_URL) {
     throw new Error('DATABASE_URL is not set');
@@ -49,12 +45,21 @@ const initializeServer = async (): Promise<Express> => {
     const app = express();
     app.use(express.json());
 
-    app.use(function (req, res, next) {
-      res.header('Access-Control-Allow-Origin', '*');
-      res.header('Access-Control-Allow-Headers', '*');
-      res.header('Access-Control-Allow-Methods', '*');
-      next();
-    });
+    // FIX CORS PROPERLY
+    app.use(cors({
+      origin: ["http://localhost:5173"], // Allow the React frontend
+      methods: ["GET", "POST", "PUT", "DELETE"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+      credentials: true, // Allow cookies & authentication headers
+    }));
+
+    // ✅ REMOVE THIS: It conflicts with `cors()`
+    // app.use(function (req, res, next) {
+    //   res.header('Access-Control-Allow-Origin', '*');
+    //   res.header('Access-Control-Allow-Headers', '*');
+    //   res.header('Access-Control-Allow-Methods', '*');
+    //   next();
+    // });
 
     // Use routers
     app.use('/', indexRouter);
