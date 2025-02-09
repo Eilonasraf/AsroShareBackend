@@ -1,10 +1,11 @@
 // Eilon-Asraf-318217619-Arel-Gabay-209626274
-
 import express, { Express } from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
+import fileRouter from './routes/FileRoute';
+import cors from 'cors';
 
 dotenv.config();
 
@@ -33,8 +34,6 @@ import postRouter from './routes/PostRoute';
 import commentRouter from './routes/CommentRoute';
 import authRouter from './routes/AuthRoute';
 
-
-
 // Create a function to initialize the server
 const initializeServer = async (): Promise<Express> => {
   if (!process.env.DATABASE_URL) {
@@ -47,6 +46,14 @@ const initializeServer = async (): Promise<Express> => {
 
     const app = express();
     app.use(express.json());
+
+    // Added CORS Middleware Properly
+    app.use(cors({
+      origin: ["http://localhost:5173", "https://yourfrontend.com"], // Change as needed
+      methods: ["GET", "POST", "PUT", "DELETE"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+      credentials: true, // Allow cookies from frontend
+    }));
 
     app.use(function (req, res, next) {
       res.header('Access-Control-Allow-Origin', '*');
