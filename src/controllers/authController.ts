@@ -89,10 +89,11 @@ const login = async (req: Request, res: Response) => {
 
         const { accessToken, refreshToken } = tokens;
 
+        // Allow multiple devices by storing multiple refresh tokens
         if (user.refreshTokens == null) {
             user.refreshTokens = [];
         }
-        user.refreshTokens.push(refreshToken);
+        user.refreshTokens.push(refreshToken); // Store multiple refresh tokens
         await user.save();
 
         res.status(200).send({
@@ -114,6 +115,7 @@ const refresh = async (req: Request, res: Response) => {
     // validate refresh token
     const { refreshToken } = req.body;
     console.log('refreshToken:', refreshToken);
+
     if (!refreshToken) {
         res.status(400).send('Invalid refresh token');
         return;
@@ -136,13 +138,14 @@ const refresh = async (req: Request, res: Response) => {
                 res.status(404).send('Invalid token');
                 return;
             }
-        // check the token is in the user's refresh token list
+        
+        // Ensure the refresh token exists before replacing it
         if (!user.refreshTokens || !user.refreshTokens.includes(refreshToken)) {
-            res.status(400).send('Invalid refresh token');
-            user.refreshTokens = [];
+            user.refreshTokens = []; // Clear tokens if an invalid refresh token is used
             await user.save();
-            return;
+            return res.status(400).send('Invalid refresh token');
         }
+
         // generate a new tokens
         const newTokens = generateTokens(user._id);
         if (!newTokens) {
@@ -152,10 +155,8 @@ const refresh = async (req: Request, res: Response) => {
             return;
         }
 
-        // delete the old refresh token
-        user.refreshTokens = user.refreshTokens.filter((token) => token !== refreshToken);
-
-        // save the refresh token to the user
+        // Replace only the used refresh token with the new one
+        user.refreshTokens = user.refreshTokens.filter((token) => token !== refreshToken); // Added this line
         user.refreshTokens.push(newTokens.refreshToken);
         await user.save();
 
@@ -175,6 +176,7 @@ const refresh = async (req: Request, res: Response) => {
 
 const logout = async (req: Request, res: Response) => {
     const { refreshToken } = req.body;
+
     if (!refreshToken) {
         res.status(400).send('Refresh token required');
         return;
@@ -189,23 +191,30 @@ const logout = async (req: Request, res: Response) => {
         }
         const userId = (payload as Payload)._id;
         try {
-        const user = await userModel.findById(userId);
-        // Check if user exists
-        if (!user) {
-            res.status(404).send('Invalid Token');
-            return;
-        }
-        // Check if refresh token is in user's refresh token list
-        if (!user.refreshTokens || !user.refreshTokens.includes(refreshToken)) {
-            res.status(400).send('Invalid refresh token');
-            user.refreshTokens = [];
+            const user = await userModel.findById(userId);
+            // Check if user exists
+            if (!user) {
+                console.error("Logout failed: User not found.");
+                res.status(404).send('Invalid Token');
+                return;
+            }
+            // Added
+            console.log("Before logout (MongoDB):", user.refreshTokens);
+
+             // Ensure refreshTokens is always an array before filtering
+             if (!user.refreshTokens) {
+                user.refreshTokens = [];
+            }
+
+            // Remove only the refresh token used for logout
+            user.refreshTokens = user.refreshTokens.filter((token) => token !== refreshToken);
             await user.save();
-            return;
-        }
-        
-        user.refreshTokens = user.refreshTokens.filter((token) => token !== refreshToken);
-        await user.save();
-        res.status(200).send('Logged out');
+
+            console.log("After logout:", user.refreshTokens); // Log after clearing
+
+            return res.status(200).send('Logged out');
+
+            // Added
     } catch (error) {
         console.error(error);
         res.status(500).send('Error logging out');
