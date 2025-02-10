@@ -1,34 +1,39 @@
-import express from 'express';
+import express from "express";
 const router = express.Router();
-import authController from '../controllers/authController';
+import authController from "../controllers/authController";
 
 /**
  * @swagger
  * tags:
  *   - name: Auth
  *     description: Authentication API
- * 
+ *
  * components:
  *   securitySchemes:
  *     bearerAuth:
  *       type: http
  *       scheme: bearer
  *       bearerFormat: JWT
- * 
+ *
  *   schemas:
  *     User:
  *       type: object
  *       required:
+ *         - name
  *         - email
  *         - password
  *       properties:
+ *         name:
+ *           type: string
+ *           description: The user's full name
  *         email:
  *           type: string
- *           description: The user email
+ *           description: The user's email
  *         password:
  *           type: string
- *           description: The user password
+ *           description: The user's password
  *       example:
+ *         name: "Bob Smith"
  *         email: "bob@gmail.com"
  *         password: "123456"
  */
@@ -38,7 +43,7 @@ import authController from '../controllers/authController';
  * /api/auth/register:
  *   post:
  *     summary: Registers a new user
- *     tags: 
+ *     tags:
  *       - Auth
  *     requestBody:
  *       required: true
@@ -54,21 +59,31 @@ import authController from '../controllers/authController';
  *       500:
  *         description: Internal server error
  */
-router.post('/register', authController.register);
+router.post("/register", authController.register);
 
 /**
  * @swagger
  * /api/auth/login:
  *   post:
  *     summary: Logs in a user
- *     tags: 
+ *     tags:
  *       - Auth
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/User'
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: The user's email
+ *               password:
+ *                 type: string
+ *                 description: The user's password
  *     responses:
  *       200:
  *         description: The user logged in successfully
@@ -79,14 +94,14 @@ router.post('/register', authController.register);
  *       500:
  *         description: Internal server error
  */
-router.post('/login', authController.login);
+router.post("/login", authController.login);
 
 /**
  * @swagger
  * /api/auth/refresh:
  *   post:
  *     summary: Generates a new refresh token
- *     tags: 
+ *     tags:
  *       - Auth
  *     requestBody:
  *       required: true
@@ -110,14 +125,14 @@ router.post('/login', authController.login);
  *       500:
  *         description: Internal server error
  */
-router.post('/refresh', authController.refresh);
+router.post("/refresh", authController.refresh);
 
 /**
  * @swagger
  * /api/auth/logout:
  *   post:
  *     summary: Logs out a user
- *     tags: 
+ *     tags:
  *       - Auth
  *     security:
  *       - bearerAuth: []
@@ -141,9 +156,6 @@ router.post('/refresh', authController.refresh);
  *       500:
  *         description: Internal server error
  */
-router.post('/logout', authController.logout);
+router.post("/logout", authController.logout);
 
 export default router;
-
-
-

@@ -9,6 +9,10 @@ const router = express.Router();
 const base = process.env.DOMAIN_BASE + "/"; // Base URL for file access
 const uploadDir = "public/"; // Directory where files will be stored
 
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 // Configure Multer for file uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -68,21 +72,16 @@ const upload = multer({ storage: storage });
  *                   type: string
  *                   description: URL of the uploaded file.
  */
-router.post(
-  "/",
-  authMiddleware,
-  upload.single("file"),
-  (req: Request, res: Response): void => {
-    console.log(req.file);
-    if (!req.file) {
-      res.status(400).send({ error: "No file uploaded" }); // Validate if a file was provided
-      return;
-    }
-    const fileUrl = base + "public/" + req.file.filename; // Construct file URL
-    console.log("File uploaded:", fileUrl);
-    res.status(200).send({ url: fileUrl }); // Send response with file URL
+router.post("/", upload.single("file"), (req: Request, res: Response): void => {
+  console.log(req.file);
+  if (!req.file) {
+    res.status(400).send({ error: "No file uploaded" }); // Validate if a file was provided
+    return;
   }
-);
+  const fileUrl = base + "public/" + req.file.filename; // Construct file URL
+  console.log("File uploaded:", fileUrl);
+  res.status(200).send({ url: fileUrl }); // Send response with file URL
+});
 
 /**
  * @swagger
