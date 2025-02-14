@@ -14,11 +14,36 @@ if (!APP_ID || !APP_SECRET) {
   throw new Error("Astronomy API credentials are not set");
 }
 
-console.log(APP_ID, APP_SECRET);
-
 // Function to generate the Authorization header
 const generateAuthHeader = (): string => {
   return `Basic ${Buffer.from(`${APP_ID}:${APP_SECRET}`).toString("base64")}`;
+};
+
+// Function to fetch latitude and longitude from a place name
+const fetchCoordinates = async (place: string) => {
+  try {
+    const response = await axios.get(
+      "https://nominatim.openstreetmap.org/search",
+      {
+        params: {
+          q: place,
+          format: "json",
+          limit: 1, // Get only the first result
+        },
+      }
+    );
+
+    if (response.data.length === 0) {
+      throw new Error("Location not found");
+    }
+
+    return {
+      latitude: parseFloat(response.data[0].lat),
+      longitude: parseFloat(response.data[0].lon),
+    };
+  } catch (error: any) {
+    throw new Error("Failed to fetch coordinates: " + error.message);
+  }
 };
 
 // Function to fetch the moon phase
@@ -28,6 +53,7 @@ const fetchMoonPhase = async (
   date: string
 ) => {
   const payload = {
+    format: "png",
     style: {
       moonStyle: "default",
       backgroundStyle: "stars",
@@ -36,9 +62,9 @@ const fetchMoonPhase = async (
       textColor: "#ffffff",
     },
     observer: {
-      latitude: latitude,
-      longitude: longitude,
-      date: date,
+      latitude,
+      longitude,
+      date,
     },
     view: {
       type: "landscape-simple",
@@ -52,7 +78,7 @@ const fetchMoonPhase = async (
       payload,
       {
         headers: {
-          Authorization: generateAuthHeader(), // Use the generateAuthHeader function here
+          Authorization: generateAuthHeader(),
           "Content-Type": "application/json",
         },
       }
@@ -63,19 +89,60 @@ const fetchMoonPhase = async (
   }
 };
 
-// Moon phase endpoint
+// Moon phase endpoint (uses location API if place is given)
+/**
+ * @swagger
+ * /api/astronomy/moon-phase:
+ *   get:
+ *     tags:
+ *       - Astronomy
+ *     description: Fetches moon phase data for a given location and date
+ *     parameters:
+ *       - name: date
+ *         in: query
+ *         description: The date for the moon phase data (default is today's date)
+ *         required: false
+ *         type: string
+ *       - name: place
+ *         in: query
+ *         description: The name of the place to fetch coordinates for
+ *         required: false
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: Successfully fetched moon phase data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 moonPhase:
+ *                   type: string
+ *                   description: The phase of the moon
+ *       500:
+ *         description: Failed to fetch moon phase data
+ */
 router.get(
   "/moon-phase",
   async (req: Request, res: Response): Promise<void> => {
     try {
       const date =
         (req.query.date as string) || new Date().toISOString().split("T")[0];
-      const latitude = req.query.latitude
-        ? parseFloat(req.query.latitude as string)
-        : 31.9023; // Default location (Modiin)
-      const longitude = req.query.longitude
-        ? parseFloat(req.query.longitude as string)
-        : 35.0259; // Default location (Modiin)
+      let latitude: number;
+      let longitude: number;
+
+      if (req.query.place) {
+        const coordinates = await fetchCoordinates(req.query.place as string);
+        latitude = coordinates.latitude;
+        longitude = coordinates.longitude;
+      } else {
+        latitude = req.query.latitude
+          ? parseFloat(req.query.latitude as string)
+          : 31.9023; // Default: Modiin
+        longitude = req.query.longitude
+          ? parseFloat(req.query.longitude as string)
+          : 35.0259;
+      }
 
       const moonPhaseData = await fetchMoonPhase(latitude, longitude, date);
       res.json(moonPhaseData);
@@ -95,20 +162,14 @@ const fetchStarChart = async (
   const payload = {
     style: "default",
     observer: {
-      latitude: latitude,
-      longitude: longitude,
-      date: date,
+      latitude,
+      longitude,
+      date,
     },
     view: {
-      type: "area",
+      type: "constellation",
       parameters: {
-        position: {
-          equatorial: {
-            rightAscension: 14.83,
-            declination: -15.23,
-          },
-        },
-        zoom: 3,
+        constellation: "ori", // 3-letter constellation ID (e.g., Orion = "ori")
       },
     },
   };
@@ -130,19 +191,60 @@ const fetchStarChart = async (
   }
 };
 
-// Star chart endpoint
+// Star chart endpoint (uses location API if place is given)
+/**
+ * @swagger
+ * /api/astronomy/star-chart:
+ *   get:
+ *     tags:
+ *       - Astronomy
+ *     description: Fetches star chart data for a given location and date
+ *     parameters:
+ *       - name: date
+ *         in: query
+ *         description: The date for the star chart data (default is today's date)
+ *         required: false
+ *         type: string
+ *       - name: place
+ *         in: query
+ *         description: The name of the place to fetch coordinates for
+ *         required: false
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: Successfully fetched star chart data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 starChart:
+ *                   type: object
+ *                   description: The star chart data
+ *       500:
+ *         description: Failed to fetch star chart data
+ */
 router.get(
   "/star-chart",
   async (req: Request, res: Response): Promise<void> => {
     try {
-      const latitude = req.query.latitude
-        ? parseFloat(req.query.latitude as string)
-        : 31.9023; // Default latitude (Modiin)
-      const longitude = req.query.longitude
-        ? parseFloat(req.query.longitude as string)
-        : 35.0259; // Default longitude (Modiin)
       const date =
         (req.query.date as string) || new Date().toISOString().split("T")[0];
+      let latitude: number;
+      let longitude: number;
+
+      if (req.query.place) {
+        const coordinates = await fetchCoordinates(req.query.place as string);
+        latitude = coordinates.latitude;
+        longitude = coordinates.longitude;
+      } else {
+        latitude = req.query.latitude
+          ? parseFloat(req.query.latitude as string)
+          : 31.9023; // Default: Modiin
+        longitude = req.query.longitude
+          ? parseFloat(req.query.longitude as string)
+          : 35.0259;
+      }
 
       const starChartData = await fetchStarChart(latitude, longitude, date);
       res.json(starChartData);
