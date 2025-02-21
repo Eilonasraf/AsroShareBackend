@@ -12,7 +12,7 @@ let postId: string;
 type User = IUser & { accessToken?: string; refreshToken?: string };
 
 const testUser: User = {
-  name: "Test User",
+  userName: "Test User",
   email: "test@user.com",
   password: "testpassword",
 };

@@ -26,7 +26,7 @@ type User = IUser & {
 };
 
 const user: User = {
-  name: "User 1",
+  userName: "User 1",
   email: "user1@gmail.com",
   password: "123456",
 };

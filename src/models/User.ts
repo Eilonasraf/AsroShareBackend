@@ -1,17 +1,20 @@
 import mongoose from "mongoose";
 
 export interface IUser {
-  name: string; // Add this line
+  userName: string; // Add this line
   email: string;
   password: string;
+  profilePictureUrl?: string;
   _id?: string;
   refreshTokens?: string[];
 }
 
 const userSchema = new mongoose.Schema<IUser>({
-  name: { // Add this line
+  userName: {
+    // Add this line
     type: String, // Add this line
     required: true, // Add this line
+    unique: true, // Add this line
   }, // Add this line
   email: {
     type: String,
@@ -22,10 +25,14 @@ const userSchema = new mongoose.Schema<IUser>({
     type: String,
     required: true,
   },
+  profilePictureUrl: {
+    type: String,
+    default: "",
+  },
   refreshTokens: {
     type: [String],
     default: [],
-  }
+  },
 });
 
 const userModel = mongoose.model<IUser>("User", userSchema);

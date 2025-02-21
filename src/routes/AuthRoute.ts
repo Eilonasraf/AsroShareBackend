@@ -1,6 +1,9 @@
 import express from "express";
 const router = express.Router();
 import authController from "../controllers/authController";
+import multer from "multer";
+
+const upload = multer();
 
 /**
  * @swagger
@@ -59,7 +62,11 @@ import authController from "../controllers/authController";
  *       500:
  *         description: Internal server error
  */
-router.post("/register", authController.register);
+router.post(
+  "/register",
+  upload.single("profilePicture"),
+  authController.register
+);
 
 /**
  * @swagger

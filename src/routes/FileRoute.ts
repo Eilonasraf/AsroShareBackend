@@ -47,8 +47,6 @@ const upload = multer({ storage: storage });
  *     tags:
  *       - Files
  *     description: Uploads a file and returns its URL.
- *     security:
- *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
