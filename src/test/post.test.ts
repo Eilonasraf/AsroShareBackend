@@ -40,18 +40,20 @@ afterAll(async () => {
 
 describe("Create Post", () => {
   test("should create a new post", async () => {
+    // Ensure the sender is set as the username, not the user ID.
+    const newPost = { ...testPosts[0], sender: testUser.userName };
     const res = await request(app)
       .post("/api/posts")
       .set({
         authorization: "JWT " + testUser.accessToken,
       })
-      .send(testPosts[0]);
+      .send(newPost);
     console.log("Response body:", res.body);
     expect(res.statusCode).toEqual(201);
     expect(res.body).toHaveProperty("_id");
-    expect(res.body.title).toEqual(testPosts[0].title);
-    expect(res.body.content).toEqual(testPosts[0].content);
-    expect(res.body.sender).toEqual(testUser._id);
+    expect(res.body.title).toEqual(newPost.title);
+    expect(res.body.content).toEqual(newPost.content);
+    expect(res.body.sender).toEqual(testUser.userName);
 
     postId = res.body._id;
   });
@@ -83,7 +85,7 @@ describe("Get Posts", () => {
     expect(res.body[0]).toHaveProperty("_id");
     expect(res.body[0].title).toEqual(testPosts[0].title);
     expect(res.body[0].content).toEqual(testPosts[0].content);
-    expect(res.body[0].sender).toEqual(testUser._id);
+    expect(res.body[0].sender).toEqual(testUser.userName);
   });
 
   test("should return 500 if there is a server error", async () => {
@@ -108,7 +110,7 @@ describe("Get Post by ID", () => {
     expect(res.body).toHaveProperty("_id");
     expect(res.body.title).toEqual(testPosts[0].title);
     expect(res.body.content).toEqual(testPosts[0].content);
-    expect(res.body.sender).toEqual(testUser._id);
+    expect(res.body.sender).toEqual(testUser.userName);
   });
 
   // Test for 404 error when the post is not found
@@ -137,13 +139,15 @@ describe("Get Post by ID", () => {
 
 describe("Get Posts by Sender", () => {
   test("should get posts by sender", async () => {
-    const res = await request(app).get(`/api/posts/sender/${testUser._id}`);
+    const res = await request(app).get(
+      `/api/posts/sender/${testUser.userName}`
+    );
     expect(res.statusCode).toEqual(200);
     expect(res.body.length).toEqual(1);
     expect(res.body[0]).toHaveProperty("_id");
     expect(res.body[0].title).toEqual(testPosts[0].title);
     expect(res.body[0].content).toEqual(testPosts[0].content);
-    expect(res.body[0].sender).toEqual(testUser._id);
+    expect(res.body[0].sender).toEqual(testUser.userName);
   });
 
   // Test for 500 error (server error)
@@ -154,7 +158,7 @@ describe("Get Posts by Sender", () => {
     });
 
     const res = await request(app).get(
-      `/api/posts/sender/${testPosts[0].sender}`
+      `/api/posts/sender/${testUser.userName}`
     );
     expect(res.statusCode).toEqual(500);
     expect(res.body).toHaveProperty("error", "Database error");
@@ -167,7 +171,7 @@ describe("Get Posts by Sender", () => {
 const updatedPost = {
   title: "Updated Post",
   content: "This is an updated post",
-  sender: "Updated Sender",
+  sender: testUser.userName,
 };
 
 describe("Update Post", () => {
@@ -180,16 +184,16 @@ describe("Update Post", () => {
       .send({
         title: updatedPost.title,
         content: updatedPost.content,
-        sender: testUser._id,
+        sender: testUser.userName,
       });
     expect(res.statusCode).toEqual(200);
     expect(res.body).toHaveProperty("_id");
     expect(res.body.title).toEqual(updatedPost.title);
     expect(res.body.content).toEqual(updatedPost.content);
-    expect(res.body.sender).toEqual(testUser._id);
+    expect(res.body.sender).toEqual(testUser.userName);
   });
 
-  // Test for 404 error when the post is not found
+  // Test for 404 error when the post does not exist
   test("should return 404 if the post does not exist", async () => {
     const fakeId = "000000000000000000000000"; // A non-existent ID
     const res = await request(app)
@@ -200,7 +204,7 @@ describe("Update Post", () => {
       .send({
         title: updatedPost.title,
         content: updatedPost.content,
-        sender: testUser._id,
+        sender: testUser.userName,
       });
     expect(res.statusCode).toEqual(404);
     expect(res.body).toHaveProperty("message", "not found");
@@ -221,7 +225,7 @@ describe("Update Post", () => {
       .send({
         title: updatedPost.title,
         content: updatedPost.content,
-        sender: testUser._id,
+        sender: testUser.userName,
       });
     expect(res.statusCode).toEqual(500);
     expect(res.body).toHaveProperty("error", "Database error");

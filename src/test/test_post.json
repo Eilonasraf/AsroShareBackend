@@ -1,17 +1,22 @@
 [
-    {
-        "title": "1",
-        "content": "Post 1",
-        "sender": "User 1"
-    },
-    {
-        "title": "2",
-        "content": "Post 2",
-        "sender": "User 2"
-    },
-    {
-        "title": "3",
-        "content": "Post 3",
-        "sender": "User 1"
-    }
+  {
+    "title": "1",
+    "content": "Post 1",
+    "sender": "User 1",
+    "pictureUrl": "http://localhost:3000/public/default_profile.png",
+    "likes": ["User 2", "User 3"]
+  },
+  {
+    "title": "2",
+    "content": "Post 2",
+    "sender": "User 2",
+    "pictureUrl": "http://example.com/images/post2.png",
+    "likes": []
+  },
+  {
+    "title": "3",
+    "content": "Post 3",
+    "sender": "User 1",
+    "likes": ["User 2"]
+  }
 ]

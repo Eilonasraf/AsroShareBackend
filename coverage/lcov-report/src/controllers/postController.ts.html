@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>15/15</span>
+                <span class='fraction'>14/14</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>15/15</span>
+                <span class='fraction'>14/14</span>
             </div>
         
             
@@ -111,18 +111,23 @@
 <a name='L46'></a><a href='#L46'>46</a>
 <a name='L47'></a><a href='#L47'>47</a>
 <a name='L48'></a><a href='#L48'>48</a>
-<a name='L49'></a><a href='#L49'>49</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -136,8 +141,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -146,67 +151,71 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Request, Response } from 'express';
-import postModel, { IPost } from '../models/Post';
-import baseController from './baseController';
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Request, Response } from "express";
+import postModel, { IPost } from "../models/Post";
+import baseController from "./baseController";
 &nbsp;
 class PostsController extends baseController&lt;IPost&gt; {
-    constructor() {
-        super(postModel);
-    }
+  constructor() {
+    super(postModel);
+  }
 &nbsp;
-    async createPost (req: Request, res: Response) {
-        const senderId = req.params.userId;
-        const post = {
-            title: req.body.title,
-            content: req.body.content,
-            sender: senderId
-        }
-        req.body = post;
-        super.create(req, res);
+  async createPost(req: Request, res: Response) {
+    // Use req.params.userName if provided; otherwise, fall back to req.body.sender
+    const post: IPost = {
+      title: req.body.title,
+      content: req.body.content,
+      sender: req.params.userName || req.body.sender,
+      pictureUrl: req.body.pictureUrl,
+      likes: req.body.likes || [],
     };
+    req.body = post;
+    super.create(req, res);
+  }
 &nbsp;
-    async getPosts (req: Request, res: Response) {
-        super.getAll(req, res, "");
+  async getPosts(req: Request, res: Response) {
+    super.getAll(req, res, "");
+  }
 &nbsp;
+  async getPostById(req: Request, res: Response): Promise&lt;void&gt; {
+    super.getById(req, res);
+  }
+&nbsp;
+  async getPostsBySender(req: Request, res: Response) {
+    // Assumes that the sender field is now the username
+    super.getAll(req, res, "sender");
+  }
+&nbsp;
+  async updatePost(req: Request, res: Response): Promise&lt;void&gt; {
+    const body = req.body;
+    // Update post with the new schema fields; using Partial&lt;IPost&gt; in case not all fields are provided
+    const post: Partial&lt;IPost&gt; = {
+      title: body.title,
+      content: body.content,
+      sender: body.sender,
+      pictureUrl: body.pictureUrl,
+      likes: body.likes,
     };
-&nbsp;
-    async getPostById (req: Request, res: Response): Promise&lt;void&gt; {
-        super.getById(req, res);
-    };
-&nbsp;
-    async getPostsBySender (req: Request, res: Response) {
-        super.getAll(req, res, 'sender');
-    }
-&nbsp;
-    async updatePost (req: Request, res: Response): Promise&lt;void&gt; {
-        const body = req.body;
-        const post = {
-            title: body.title,
-            content: body.content,
-            sender: body.sender
-        };
-        req.body = post;
-        super.update(req, res);
-    };
-};
-&nbsp;
+    req.body = post;
+    super.update(req, res);
+  }
+}
 &nbsp;
 export default new PostsController();
-&nbsp;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -214,7 +223,7 @@ export default new PostsController();
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-02-21T09:56:51.009Z
+                at 2025-02-21T17:48:35.903Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

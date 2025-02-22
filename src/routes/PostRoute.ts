@@ -1,21 +1,21 @@
-import express from 'express';
+import express from "express";
 const router = express.Router();
-import postController from '../controllers/postController';
-import { authMiddleware } from '../controllers/authController';
+import postController from "../controllers/postController";
+import { authMiddleware } from "../controllers/authController";
 
 /**
  * @swagger
  * tags:
  *   - name: Posts
  *     description: Posts API
- * 
+ *
  * components:
  *   securitySchemes:
  *     bearerAuth:
  *       type: http
  *       scheme: bearer
  *       bearerFormat: JWT
- * 
+ *
  *   schemas:
  *     Post:
  *       type: object
@@ -32,30 +32,37 @@ import { authMiddleware } from '../controllers/authController';
  *           description: The content of the post
  *         sender:
  *           type: string
- *           description: The user ID who created the post
+ *           description: The username of the user who created the post
+ *         pictureUrl:
+ *           type: string
+ *           description: The URL of the picture
+ *         likes:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: The list of usernames who liked the post
  *       example:
  *         title: "Example Post"
  *         content: "This is the content of the example post."
- *         sender: "60f7c1d8b2b3c8123c456789"
+ *         sender: "User1"
  */
-
 
 /**
  * @swagger
  * /api/posts:
  *   post:
  *     summary: Creates a new post
- *     tags: 
+ *     tags:
  *       - Posts
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: userId
+ *         name: userName
  *         required: true
  *         schema:
  *           type: string
- *         description: The ID of the user creating the post
+ *         description: The username of the user creating the post
  *     requestBody:
  *       required: true
  *       content:
@@ -65,6 +72,7 @@ import { authMiddleware } from '../controllers/authController';
  *             required:
  *               - title
  *               - content
+ *               - sender
  *             properties:
  *               title:
  *                 type: string
@@ -72,6 +80,9 @@ import { authMiddleware } from '../controllers/authController';
  *               content:
  *                 type: string
  *                 description: The content of the post
+ *               sender:
+ *                 type: string
+ *                 description: The username of the user who created the post
  *     responses:
  *       201:
  *         description: Post created successfully
@@ -91,20 +102,24 @@ import { authMiddleware } from '../controllers/authController';
  *                   description: The content of the post
  *                 sender:
  *                   type: string
- *                   description: The user who created the post
+ *                   description: The username of the user who created the post
  *       400:
  *         description: Missing required fields (title or content)
  *       500:
  *         description: Internal server error
  */
-router.post('/', authMiddleware,  postController.createPost.bind(postController));
+router.post(
+  "/",
+  authMiddleware,
+  postController.createPost.bind(postController)
+);
 
 /**
  * @swagger
  * /api/posts:
  *   get:
  *     summary: Gets all posts
- *     tags: 
+ *     tags:
  *       - Posts
  *     responses:
  *       200:
@@ -118,14 +133,14 @@ router.post('/', authMiddleware,  postController.createPost.bind(postController)
  *       500:
  *         description: Internal server error
  */
-router.get('/', postController.getPosts.bind(postController));
+router.get("/", postController.getPosts.bind(postController));
 
 /**
  * @swagger
  * /api/posts/{id}:
  *   get:
  *     summary: Gets a post by ID
- *     tags: 
+ *     tags:
  *       - Posts
  *     parameters:
  *       - in: path
@@ -146,14 +161,14 @@ router.get('/', postController.getPosts.bind(postController));
  *       500:
  *         description: Internal server error
  */
-router.get('/:id', postController.getPostById.bind(postController));
+router.get("/:id", postController.getPostById.bind(postController));
 
 /**
  * @swagger
  * /api/posts/sender/{sender}:
  *   get:
  *     summary: Gets posts by sender
- *     tags: 
+ *     tags:
  *       - Posts
  *     parameters:
  *       - in: path
@@ -161,7 +176,7 @@ router.get('/:id', postController.getPostById.bind(postController));
  *         required: true
  *         schema:
  *           type: string
- *         description: The ID of the sender
+ *         description: The username of the sender
  *     responses:
  *       200:
  *         description: Posts retrieved successfully
@@ -174,14 +189,17 @@ router.get('/:id', postController.getPostById.bind(postController));
  *       500:
  *         description: Internal server error
  */
-router.get('/sender/:sender', postController.getPostsBySender.bind(postController));
+router.get(
+  "/sender/:sender",
+  postController.getPostsBySender.bind(postController)
+);
 
 /**
  * @swagger
  * /api/posts/{id}:
  *   put:
  *     summary: Updates a post by ID
- *     tags: 
+ *     tags:
  *       - Posts
  *     security:
  *       - bearerAuth: []
@@ -210,9 +228,16 @@ router.get('/sender/:sender', postController.getPostsBySender.bind(postControlle
  *       500:
  *         description: Internal server error
  */
-router.put('/:id', authMiddleware, postController.updatePost.bind(postController));
+router.put(
+  "/:id",
+  authMiddleware,
+  postController.updatePost.bind(postController)
+);
+
+router.post(
+  "/like/:id",
+  authMiddleware,
+  postController.toggleLike.bind(postController)
+);
 
 export default router;
-
-
-
