@@ -68,6 +68,11 @@ router.post(
   authController.register
 );
 
+router.post(
+  "/google", 
+  authController.googleSignin
+);
+
 /**
  * @swagger
  * /api/auth/login:

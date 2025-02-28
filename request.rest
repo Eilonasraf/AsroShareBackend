@@ -54,4 +54,3 @@ DELETE http://localhost:3000/api/comments/6776cb39096ef8f8bf5a0787
 
 ### Get Comments by Post Id
 GET http://localhost:3000/api/comments/post/6776ca6016747645178c199e
-

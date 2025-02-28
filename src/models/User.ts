@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
 
 export interface IUser {
-  userName: string; // Add this line
+  _id?: string;
+  userName: string; 
   email: string;
   password: string;
+  googleId?: string; // Optional
   profilePictureUrl?: string;
-  _id?: string;
   refreshTokens?: string[];
 }
 
@@ -23,7 +24,14 @@ const userSchema = new mongoose.Schema<IUser>({
   },
   password: {
     type: String,
-    required: true,
+    required: function() {
+      return !this.googleId; // Password required only if no Google login
+    },
+  },
+  googleId: {  // Add this field for Google users
+    type: String,
+    unique: true,
+    sparse: true, // Allows some users to not have this field
   },
   profilePictureUrl: {
     type: String,
@@ -32,6 +40,7 @@ const userSchema = new mongoose.Schema<IUser>({
   refreshTokens: {
     type: [String],
     default: [],
+    required: true,
   },
 });
 

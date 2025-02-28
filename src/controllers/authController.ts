@@ -5,10 +5,97 @@ import bcrypt from "bcrypt";
 import jwt, { SignOptions } from "jsonwebtoken";
 import axios from "axios";
 import FormData from "form-data";
+import { OAuth2Client } from 'google-auth-library';
+import User from "../models/User";
 
 type Payload = {
   _id: string;
 };
+
+const client = new OAuth2Client();
+
+const googleSignin = async (req: Request, res: Response): Promise<void> => {
+  console.log(req.body)
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: req.body.credential,
+      audience: process.env.GOOGLE_CLIENT_ID,  
+    });
+
+    const payload = ticket.getPayload();
+    const email = payload?.email;
+
+    if (!email) {
+      res.status(400).send("Google authentication failed: No email found.");
+      return; // Make sure to return here
+    }
+
+    // Check if user exists in DB
+    let user = await User.findOne({ email: email });
+
+   // Create user if not exists
+    if (!user) {
+      user = await User.create({
+        email: email,
+        userName: payload?.name || "New User",
+        googleId: payload.sub, // Store Google ID
+        profilePictureUrl: payload?.picture,
+      });
+    }
+     // Generate Tokens
+    const tokens = await GoogleGenerateTokens(user);
+
+    if (!tokens) {
+      res.status(500).send("Error generating tokens");
+      return;
+    }
+    // Save refresh token to MongoDB
+    user.refreshTokens = user.refreshTokens || [];
+    user.refreshTokens.push(tokens.refreshToken);
+    await user.save(); // Saving the new refresh token
+
+    res.status(200).json({
+      userName: user.userName,
+      email: user.email,
+      _id: user._id,
+      ...tokens
+    });
+
+  } catch (err) {
+    console.error("Google sign-in error:", err);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+
+// Google generateTokens 
+const GoogleGenerateTokens = async (user: any) => {
+  const random = Math.floor(Math.random() * 1000000);
+
+  if (!process.env.TOKEN_SECRET) {
+    return null;
+  }
+  const accessToken = jwt.sign(
+    {
+      _id: user._id, // Include only user ID
+      email: user.email,
+      random: random,
+    },
+    process.env.TOKEN_SECRET,
+    { expiresIn: process.env.ACCESS_TOKEN_EXPIRATION } as SignOptions
+  );
+
+  const refreshToken = jwt.sign(
+    {
+      _id: user._id, // Only store ID, not full user object
+      random: random,
+    },
+    process.env.TOKEN_SECRET,
+    { expiresIn: process.env.REFRESH_TOKEN_EXPIRATION } as SignOptions
+  );
+  return { accessToken, refreshToken };
+}
+
 const register = async (req: Request, res: Response) => {
   const { email, userName, password } = req.body;
   // 'profilePicture' comes from the multer middleware (field name should match client-side)
@@ -199,7 +286,7 @@ const refresh = async (req: Request, res: Response) => {
         // Replace only the used refresh token with the new one
         user.refreshTokens = user.refreshTokens.filter(
           (token) => token !== refreshToken
-        ); // Added this line
+        ); 
         user.refreshTokens.push(newTokens.refreshToken);
         await user.save();
 
@@ -226,7 +313,6 @@ const logout = async (req: Request, res: Response) => {
     return;
   }
 
-  // Find user by refresh token
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   jwt.verify(
     refreshToken,
@@ -238,28 +324,42 @@ const logout = async (req: Request, res: Response) => {
       }
       const userId = (payload as Payload)._id;
       try {
-        const user = await userModel.findById(userId);
+        let user = await userModel.findById(userId);
         // Check if user exists
         if (!user) {
           console.error("Logout failed: User not found.");
           res.status(404).send("Invalid Token");
           return;
         }
-        // Added
+        
         console.log("Before logout (MongoDB):", user.refreshTokens);
+        console.log("Refresh token to remove:", `"${refreshToken.trim()}"`);
 
         // Ensure refreshTokens is always an array before filtering
-        if (!user.refreshTokens) {
+        if (!Array.isArray(user.refreshTokens)) {
           user.refreshTokens = [];
         }
 
-        // Remove only the refresh token used for logout
-        user.refreshTokens = user.refreshTokens.filter(
-          (token) => token !== refreshToken
-        );
-        await user.save();
+        // Normalize token formatting before filtering
+        user.refreshTokens = user.refreshTokens.map(token => token.trim());
+        const cleanedToken = refreshToken.trim();
 
-        console.log("After logout:", user.refreshTokens); // Log after clearing
+        console.log("Processed tokens for filtering:", user.refreshTokens);
+        console.log("Processed token to remove:", cleanedToken);
+
+        // Remove the refresh token used for logout
+        const updatedTokens = user.refreshTokens.filter(token => token !== cleanedToken);
+
+        console.log("After filtering (before saving to MongoDB):", updatedTokens);
+
+        // Force MongoDB to update with `findByIdAndUpdate`
+        user = await userModel.findByIdAndUpdate(
+          userId,
+          { $set: { refreshTokens: updatedTokens } },
+          { new: true }
+        );
+
+        console.log("After logout (MongoDB):", user?.refreshTokens);
 
         return res.status(200).send("Logged out");
 
@@ -298,4 +398,4 @@ export const authMiddleware = (
   });
 };
 
-export default { register, login, refresh, logout };
+export default { register, googleSignin , login, refresh, logout };
