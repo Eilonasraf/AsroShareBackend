@@ -165,7 +165,7 @@ describe("Update Comment", () => {
         postId: postId,
       });
     expect(res.statusCode).toEqual(404);
-    expect(res.body).toHaveProperty("message", "not found");
+    expect(res.body).toHaveProperty("message", "Not found");
   });
 
   test("should return 500 if there is a server error", async () => {

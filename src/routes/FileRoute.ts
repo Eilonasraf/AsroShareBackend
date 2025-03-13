@@ -76,7 +76,7 @@ router.post("/", upload.single("file"), (req: Request, res: Response): void => {
     res.status(400).send({ error: "No file uploaded" }); // Validate if a file was provided
     return;
   }
-  const fileUrl = base + "public/" + req.file.filename; // Construct file URL
+  const fileUrl = req.file.filename; // Construct file URL
   console.log("File uploaded:", fileUrl);
   res.status(200).send({ url: fileUrl }); // Send response with file URL
 });
@@ -164,7 +164,7 @@ router.put(
 
         // New file URL
         if (req.file) {
-          const fileUrl = base + "public/" + req.file.filename;
+          const fileUrl = req.file.filename;
           console.log("New file uploaded:", req.file.filename);
           console.log("New file URL:", fileUrl);
 

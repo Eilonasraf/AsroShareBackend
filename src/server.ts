@@ -35,6 +35,7 @@ import commentRouter from "./routes/CommentRoute";
 import authRouter from "./routes/AuthRoute";
 import fileRouter from "./routes/FileRoute";
 import AstronomyApiRoute from "./routes/AstronomyApiRoute";
+import UserRoute from "./routes/UserRoute";
 
 // Create a function to initialize the server
 const initializeServer = async (): Promise<Express> => {
@@ -69,6 +70,7 @@ const initializeServer = async (): Promise<Express> => {
     app.use("/api/auth", authRouter);
     app.use("/api/file", fileRouter);
     app.use("/api/astronomy", AstronomyApiRoute);
+    app.use("/api/users", UserRoute);
     app.use("/public", express.static("public"));
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
