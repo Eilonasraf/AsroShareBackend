@@ -37,7 +37,7 @@ const googleSignin = async (req: Request, res: Response): Promise<void> => {
     if (!user) {
       user = await User.create({
         email: email,
-        userName: payload?.name || "New User",
+        userName: email.split('@')[0] || "New User",
         googleId: payload.sub, // Store Google ID
         profilePictureUrl: payload?.picture,
       });
