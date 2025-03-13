@@ -5,7 +5,7 @@ import bcrypt from "bcrypt";
 import jwt, { SignOptions } from "jsonwebtoken";
 import axios from "axios";
 import FormData from "form-data";
-import { OAuth2Client } from 'google-auth-library';
+import { OAuth2Client } from "google-auth-library";
 import User from "../models/User";
 
 type Payload = {
@@ -15,11 +15,11 @@ type Payload = {
 const client = new OAuth2Client();
 
 const googleSignin = async (req: Request, res: Response): Promise<void> => {
-  console.log(req.body)
+  console.log(req.body);
   try {
     const ticket = await client.verifyIdToken({
       idToken: req.body.credential,
-      audience: process.env.GOOGLE_CLIENT_ID,  
+      audience: process.env.GOOGLE_CLIENT_ID,
     });
 
     const payload = ticket.getPayload();
@@ -33,7 +33,7 @@ const googleSignin = async (req: Request, res: Response): Promise<void> => {
     // Check if user exists in DB
     let user = await User.findOne({ email: email });
 
-   // Create user if not exists
+    // Create user if not exists
     if (!user) {
       user = await User.create({
         email: email,
@@ -42,7 +42,7 @@ const googleSignin = async (req: Request, res: Response): Promise<void> => {
         profilePictureUrl: payload?.picture,
       });
     }
-     // Generate Tokens
+    // Generate Tokens
     const tokens = await GoogleGenerateTokens(user);
 
     if (!tokens) {
@@ -58,17 +58,15 @@ const googleSignin = async (req: Request, res: Response): Promise<void> => {
       userName: user.userName,
       email: user.email,
       _id: user._id,
-      ...tokens
+      ...tokens,
     });
-
   } catch (err) {
     console.error("Google sign-in error:", err);
     res.status(500).send("Internal Server Error");
   }
 };
 
-
-// Google generateTokens 
+// Google generateTokens
 const GoogleGenerateTokens = async (user: any) => {
   const random = Math.floor(Math.random() * 1000000);
 
@@ -94,7 +92,7 @@ const GoogleGenerateTokens = async (user: any) => {
     { expiresIn: process.env.REFRESH_TOKEN_EXPIRATION } as SignOptions
   );
   return { accessToken, refreshToken };
-}
+};
 
 const register = async (req: Request, res: Response) => {
   const { email, userName, password } = req.body;
@@ -111,7 +109,7 @@ const register = async (req: Request, res: Response) => {
   try {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    let profilePictureUrl = "";
+    let profilePictureUrl = "http://localhost:3000/public/default_profile.png";
 
     if (profilePicture) {
       // Create a FormData instance for forwarding the file
@@ -286,7 +284,7 @@ const refresh = async (req: Request, res: Response) => {
         // Replace only the used refresh token with the new one
         user.refreshTokens = user.refreshTokens.filter(
           (token) => token !== refreshToken
-        ); 
+        );
         user.refreshTokens.push(newTokens.refreshToken);
         await user.save();
 
@@ -331,7 +329,7 @@ const logout = async (req: Request, res: Response) => {
           res.status(404).send("Invalid Token");
           return;
         }
-        
+
         console.log("Before logout (MongoDB):", user.refreshTokens);
         console.log("Refresh token to remove:", `"${refreshToken.trim()}"`);
 
@@ -341,16 +339,21 @@ const logout = async (req: Request, res: Response) => {
         }
 
         // Normalize token formatting before filtering
-        user.refreshTokens = user.refreshTokens.map(token => token.trim());
+        user.refreshTokens = user.refreshTokens.map((token) => token.trim());
         const cleanedToken = refreshToken.trim();
 
         console.log("Processed tokens for filtering:", user.refreshTokens);
         console.log("Processed token to remove:", cleanedToken);
 
         // Remove the refresh token used for logout
-        const updatedTokens = user.refreshTokens.filter(token => token !== cleanedToken);
+        const updatedTokens = user.refreshTokens.filter(
+          (token) => token !== cleanedToken
+        );
 
-        console.log("After filtering (before saving to MongoDB):", updatedTokens);
+        console.log(
+          "After filtering (before saving to MongoDB):",
+          updatedTokens
+        );
 
         // Force MongoDB to update with `findByIdAndUpdate`
         user = await userModel.findByIdAndUpdate(
@@ -398,4 +401,4 @@ export const authMiddleware = (
   });
 };
 
-export default { register, googleSignin , login, refresh, logout };
+export default { register, googleSignin, login, refresh, logout };

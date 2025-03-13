@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 export interface IUser {
   _id?: string;
-  userName: string; 
+  userName: string;
   email: string;
   password: string;
   googleId?: string; // Optional
@@ -24,18 +24,19 @@ const userSchema = new mongoose.Schema<IUser>({
   },
   password: {
     type: String,
-    required: function() {
+    required: function () {
       return !this.googleId; // Password required only if no Google login
     },
   },
-  googleId: {  // Add this field for Google users
+  googleId: {
+    // Add this field for Google users
     type: String,
     unique: true,
     sparse: true, // Allows some users to not have this field
   },
   profilePictureUrl: {
     type: String,
-    default: "",
+    default: "http://localhost:3000/public/default_profile.png",
   },
   refreshTokens: {
     type: [String],
