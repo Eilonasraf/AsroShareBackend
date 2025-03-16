@@ -60,25 +60,30 @@ class BaseController<T> {
     const body = req.body;
     let item;
 
-    // First, try to find by ID if provided
-    if (req.params.id) {
-      item = await this.model.findById(req.params.id);
-    } else if (req.params.userName) {
-      // Otherwise, try to find by username
-      item = await this.model.findOne({ userName: req.params.userName });
-    } else {
-      res.status(400).json({ message: "No valid identifier provided" });
-      return;
-    }
+    try {
+      // First, try to find by ID if provided
+      if (req.params.id) {
+        item = await this.model.findById(req.params.id);
+      } else if (req.params.userName) {
+        // Otherwise, try to find by username
+        item = await this.model.findOne({ userName: req.params.userName });
+      } else {
+        res.status(400).json({ message: "No valid identifier provided" });
+        return;
+      }
 
-    console.log("Item found:", item);
-    if (!item) {
-      res.status(404).json({ message: "Not found" });
-      return;
+      console.log("Item found:", item);
+      if (!item) {
+        res.status(404).json({ message: "Not found" });
+        return;
+      }
+      console.log("Updating item with data:", body);
+      item.set(body);
+      await item.save();
+      res.json(item);
+    } catch (err) {
+      res.status(500).json({ error: (err as Error).message });
     }
-    item.set(body);
-    await item.save();
-    res.json(item);
   }
 
   async delete(req: Request, res: Response): Promise<void> {

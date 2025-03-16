@@ -70,16 +70,21 @@ const upload = multer({ storage: storage });
  *                   type: string
  *                   description: URL of the uploaded file.
  */
-router.post("/", upload.single("file"), (req: Request, res: Response): void => {
-  console.log(req.file);
-  if (!req.file) {
-    res.status(400).send({ error: "No file uploaded" }); // Validate if a file was provided
-    return;
+router.post(
+  "/",
+  upload.single("file"),
+  authMiddleware,
+  (req: Request, res: Response): void => {
+    console.log(req.file);
+    if (!req.file) {
+      res.status(400).send({ error: "No file uploaded" }); // Validate if a file was provided
+      return;
+    }
+    const fileUrl = req.file.filename; // Construct file URL
+    console.log("File uploaded:", fileUrl);
+    res.status(200).send({ url: fileUrl }); // Send response with file URL
   }
-  const fileUrl = req.file.filename; // Construct file URL
-  console.log("File uploaded:", fileUrl);
-  res.status(200).send({ url: fileUrl }); // Send response with file URL
-});
+);
 
 /**
  * @swagger
