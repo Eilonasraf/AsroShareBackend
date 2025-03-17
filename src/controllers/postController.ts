@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
+import axios from "axios";
+import FormData from "form-data";
 import postModel, { IPost } from "../models/Post";
 import baseController from "./baseController";
 
@@ -9,15 +11,52 @@ class PostsController extends baseController<IPost> {
   }
 
   async createPost(req: Request, res: Response) {
-    // Use req.params.userName if provided; otherwise, fall back to req.body.sender
-    const post: IPost = {
-      title: req.body.title,
-      content: req.body.content,
-      sender: req.params.userName || req.body.sender,
-      pictureUrl: req.body.pictureUrl,
-      likes: req.body.likes || [],
+    console.log(
+      "Creating post for sender:",
+      req.params.userName || req.body.sender
+    );
+    const body = req.body;
+    let pictureUrl: string = body.pictureUrl || "";
+
+    // If a new file is uploaded, process it.
+    if (req.file) {
+      console.log("File uploaded for creation:", req.file.originalname);
+      const fileFormData = new FormData();
+      fileFormData.append("file", req.file.buffer, req.file.originalname);
+
+      try {
+        // For creation, simply post the file since there's no old file to replace.
+        const fileResponse = await axios.post(
+          "http://localhost:3000/api/file/",
+          fileFormData,
+          {
+            headers: {
+              ...fileFormData.getHeaders(),
+              Authorization: req.headers.authorization || "",
+            },
+          }
+        );
+        console.log("File upload response:", fileResponse.data);
+        pictureUrl = fileResponse.data.url;
+      } catch (error) {
+        console.error("Error uploading file:", (error as Error).message);
+      }
+    }
+
+    // Build the new post object. Note that sender is taken from req.params.userName if provided.
+    const newPost: IPost = {
+      title: body.title,
+      content: body.content,
+      sender: body.sender,
+      pictureUrl: pictureUrl,
+      likes: [], // new posts start with no likes
     };
-    req.body = post;
+
+    // Overwrite req.body with the new post object.
+    req.body = newPost;
+    console.log("New post object:", req.body);
+
+    // Call the parent's create method to perform the actual creation.
     super.create(req, res);
   }
 
@@ -35,16 +74,86 @@ class PostsController extends baseController<IPost> {
   }
 
   async updatePost(req: Request, res: Response): Promise<void> {
+    console.log("Updating post:", req.params.id);
     const body = req.body;
-    // Update post with the new schema fields; using Partial<IPost> in case not all fields are provided
-    const post: Partial<IPost> = {
+    console.log("body:", body);
+
+    // Use the current pictureUrl from body or default to an empty string.
+    let pictureUrl: string = body.pictureUrl || "";
+
+    // If deletion is requested, explicitly set pictureUrl to an empty string.
+    if (body.deletePhoto === "true" || body.deletePhoto === true) {
+      pictureUrl = "";
+      try {
+        const fileResponse = await axios.delete(
+          "http://localhost:3000/api/file/" + body.pictureUrl,
+          {
+            headers: {
+              Authorization: req.headers.authorization || "",
+            },
+          }
+        );
+        console.log("File deletion response:", fileResponse.data);
+      } catch (error) {
+        console.error("Error deleting file:", (error as Error).message);
+      }
+    }
+
+    // If a new file is uploaded, process it.
+    if (req.file) {
+      console.log("File uploaded for update:", req.file.originalname);
+      const fileFormData = new FormData();
+      fileFormData.append("file", req.file.buffer, req.file.originalname);
+
+      // Optionally, pass the old picture URL to the file endpoint.
+      const oldPath = body.oldPictureUrl;
+      console.log("Old picture path:", oldPath);
+
+      try {
+        let fileResponse;
+        if (oldPath) {
+          // Delete the old file
+          fileResponse = await axios.put(
+            "http://localhost:3000/api/file/" + oldPath,
+            fileFormData,
+            {
+              headers: {
+                ...fileFormData.getHeaders(),
+                Authorization: req.headers.authorization || "",
+              },
+            }
+          );
+        } else {
+          fileResponse = await axios.post(
+            "http://localhost:3000/api/file/",
+            fileFormData,
+            {
+              headers: {
+                ...fileFormData.getHeaders(),
+                Authorization: req.headers.authorization || "",
+              },
+            }
+          );
+        }
+        console.log("File upload response:", fileResponse.data);
+        pictureUrl = fileResponse.data.url;
+      } catch (error) {
+        console.error("Error uploading file:", (error as Error).message);
+      }
+    }
+
+    // Build the update object for the post with only title, content, and pictureUrl.
+    const updatedPost: Partial<IPost> = {
       title: body.title,
       content: body.content,
-      sender: body.sender,
-      pictureUrl: body.pictureUrl,
-      likes: body.likes,
+      pictureUrl: pictureUrl,
     };
-    req.body = post;
+
+    // Overwrite req.body with the updated post object.
+    req.body = updatedPost;
+    console.log("Updated post object:", req.body);
+
+    // Call the parent's update method to perform the actual update.
     super.update(req, res);
   }
 
@@ -96,6 +205,10 @@ class PostsController extends baseController<IPost> {
       console.error("Error toggling like for post", req.params.id, ":", error);
       res.status(500).json({ error: (error as Error).message });
     }
+  }
+
+  async deletePost(req: Request, res: Response): Promise<void> {
+    super.delete(req, res);
   }
 }
 

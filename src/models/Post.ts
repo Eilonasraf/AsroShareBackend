@@ -5,7 +5,7 @@ export interface IPost {
   content: string;
   sender: string;
   pictureUrl?: string | "";
-  likes?: string[];
+  likes: string[];
 }
 
 const PostSchema = new mongoose.Schema<IPost>({
@@ -13,7 +13,7 @@ const PostSchema = new mongoose.Schema<IPost>({
   content: { type: String, required: true },
   sender: { type: String, required: true },
   pictureUrl: { type: String, default: "" },
-  likes: { type: [String], default: [] },
+  likes: { type: [String], required: true, default: [] },
 });
 
 const postModel = mongoose.model<IPost>("Post", PostSchema);

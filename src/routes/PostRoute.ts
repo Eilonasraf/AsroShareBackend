@@ -2,6 +2,9 @@ import express from "express";
 const router = express.Router();
 import postController from "../controllers/postController";
 import { authMiddleware } from "../controllers/authController";
+import multer from "multer";
+
+const upload = multer();
 
 /**
  * @swagger
@@ -111,6 +114,7 @@ import { authMiddleware } from "../controllers/authController";
 router.post(
   "/",
   authMiddleware,
+  upload.single("photo"),
   postController.createPost.bind(postController)
 );
 
@@ -231,6 +235,7 @@ router.get(
 router.put(
   "/:id",
   authMiddleware,
+  upload.single("photo"),
   postController.updatePost.bind(postController)
 );
 
@@ -238,6 +243,12 @@ router.post(
   "/like/:id",
   authMiddleware,
   postController.toggleLike.bind(postController)
+);
+
+router.delete(
+  "/:id",
+  authMiddleware,
+  postController.deletePost.bind(postController)
 );
 
 export default router;
