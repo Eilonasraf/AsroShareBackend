@@ -57,6 +57,7 @@ const googleSignin = async (req: Request, res: Response): Promise<void> => {
     res.status(200).json({
       userName: user.userName,
       email: user.email,
+      profilePictureUrl: user.profilePictureUrl,
       _id: user._id,
       ...tokens,
     });
@@ -109,7 +110,7 @@ const register = async (req: Request, res: Response) => {
   try {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    let profilePictureUrl = "http://localhost:3000/public/default_profile.png";
+    let profilePictureUrl = "default_profile.png";
 
     if (profilePicture) {
       // Create a FormData instance for forwarding the file
@@ -222,6 +223,7 @@ const login = async (req: Request, res: Response) => {
     res.status(200).send({
       userName: user.userName,
       email: user.email,
+      profilePictureUrl:"http://localhost:3000/public/" + user.profilePictureUrl,
       _id: user._id,
       accessToken: accessToken,
       refreshToken: refreshToken,

@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema<IUser>({
   },
   profilePictureUrl: {
     type: String,
-    default: "http://localhost:3000/public/default_profile.png",
+    default: "default_profile.png",
   },
   refreshTokens: {
     type: [String],
