@@ -14,7 +14,7 @@ const router = express.Router();
 /**
  * @swagger
  * /api/ai/generate:
- *   post:
+ *   get:
  *     summary: Generate an AI description using Gemini
  *     tags:
  *       - AI
@@ -51,12 +51,13 @@ const router = express.Router();
  *       500:
  *         description: Server error - failed to generate description
  */
-router.post(
+router.get(
   "/generate",
   authMiddleware, // require JWT auth
   async (req: Request, res: Response): Promise<void> => {
     try {
-      const { prompt } = req.body;
+      // Use req.query instead of req.body for GET requests
+      const prompt = req.query.prompt as string;
 
       if (!prompt) {
         res.status(400).json({ message: "Prompt is required" });
@@ -64,7 +65,7 @@ router.post(
       }
 
       const description = await generateGeminiDescription(prompt);
-
+      console.log("Generated description:", description);
       res.status(200).json({ description });
     } catch (error: unknown) {
       if (error instanceof Error) {
