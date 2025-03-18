@@ -3,7 +3,6 @@ import userModel, { IUser } from "../models/User";
 import baseController from "./baseController";
 import axios from "axios";
 import FormData from "form-data";
-import bcrypt from "bcrypt";
 
 class UserController extends baseController<IUser> {
   constructor() {
@@ -15,27 +14,97 @@ class UserController extends baseController<IUser> {
     super.getAll(req, res, "userName");
   }
 
+  async updateGoogleUser(req: Request, res: Response): Promise<void> {
+    console.log("Updating Google user:", req.params.userName);
+    console.log("Uploaded file:", req.file);
+  
+    let profilePictureUrl: string | undefined;
+  
+    try {
+      // Handle profile picture upload, ignore old Google URL
+      if (req.file) {
+        console.log("Google user uploaded a new picture.");
+  
+        const fileFormData = new FormData();
+        fileFormData.append("file", req.file.buffer, req.file.originalname);
+  
+        // Upload without trying to delete anything
+        try {
+          const fileResponse = await axios.post(
+            "http://localhost:3000/api/file",
+            fileFormData,
+            {
+              headers: {
+                ...fileFormData.getHeaders(),
+                Authorization: req.headers.authorization,
+              },
+            }
+          );
+  
+          console.log("Google user picture upload response:", fileResponse.data);
+          profilePictureUrl = fileResponse.data.url;
+        } catch (error) {
+          console.error("Error uploading Google user's picture:", error);
+          res.status(500).send({ error: "Failed to upload profile picture" });
+          return;
+        }
+      }
+  
+      // Prepare the update payload
+      const updatedUser: Partial<IUser> = {};
+  
+      if (req.body.userName) {
+        updatedUser.userName = req.body.userName;
+      }
+  
+      if (profilePictureUrl) {
+        updatedUser.profilePictureUrl = profilePictureUrl;
+      }
+  
+      // Find Google user and update
+      const userToUpdate = await userModel.findOne({ userName: req.params.userName });
+  
+      if (!userToUpdate) {
+        res.status(404).send({ error: "User not found" });
+        return;
+      }
+  
+      // Only allow update if user is Google user
+      if (!userToUpdate.googleId) {
+        res.status(400).send({ error: "Not a Google user" });
+        return;
+      }
+  
+      // Apply changes and save
+      userToUpdate.set(updatedUser);
+      await userToUpdate.save();
+  
+      console.log("Google user successfully updated:", userToUpdate);
+  
+      res.json(userToUpdate);
+  
+    } catch (error) {
+      console.error("Error updating Google user:", error);
+      res.status(500).send({ error: "Failed to update Google user" });
+    }
+  }
+  
   async updateUser(req: Request, res: Response): Promise<void> {
     console.log("Updating user:", req.params.userName);
     console.log("Updating file:", req.file);
-    const { password } = req.body;
-    let hashedPassword: string | undefined;
+
     let profilePictureUrl: string | undefined;
 
     try {
-      // If a new password is provided, hash it
-      if (password) {
-        const salt = await bcrypt.genSalt(10);
-        hashedPassword = await bcrypt.hash(password, salt);
-      }
-
       // If a new file is uploaded, handle it like in the registration process.
       if (req.file) {
         console.log("File uploaded for update.");
+
         // Create a FormData instance and append the file buffer.
         const fileFormData = new FormData();
         fileFormData.append("file", req.file.buffer, req.file.originalname);
-        const oldPath = req.body.oldProfilePictureUrl;
+
+        const oldPath = req.body.oldProfilePictureUrl
 
         console.log("Old path:", oldPath);
 
@@ -50,8 +119,10 @@ class UserController extends baseController<IUser> {
               },
             }
           );
+
           console.log("File upload response:", fileResponse.data);
           profilePictureUrl = fileResponse.data.url;
+
         } catch (error) {
           console.error("Error uploading file:", error);
         }
@@ -59,9 +130,10 @@ class UserController extends baseController<IUser> {
 
       // Build the partial update object for the user.
       const updatedUser: Partial<IUser> = {};
-      if (hashedPassword) {
-        updatedUser.password = hashedPassword;
+      if (req.body.userName) {
+        updatedUser.userName = req.body.userName;
       }
+      
       if (profilePictureUrl) {
         console.log("Updating profile picture URL:", profilePictureUrl);
         updatedUser.profilePictureUrl = profilePictureUrl;
@@ -71,7 +143,18 @@ class UserController extends baseController<IUser> {
       req.body = updatedUser;
 
       // Call the parent's update method to perform the actual update.
-      super.update(req, res);
+      try {
+        await super.update(req, res);
+        const userAfterUpdate   = await userModel.findOne({ userName: req.body.userName });
+        res.json(userAfterUpdate );
+
+      } catch (error) {
+        const typedError = error as { code: number; keyPattern?: { userName?: unknown } };
+        if (typedError.code === 11000 && typedError.keyPattern && typedError.keyPattern.userName) {
+          res.status(400).send({ error: "Username already exists, Please choose another one" });
+          return;
+        }
+      }
     } catch (error) {
       console.error("Error updating user:", error);
       res.status(500).send({ error: "Failed to update user" });
