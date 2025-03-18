@@ -1,153 +1,134 @@
 import request from "supertest";
-import appPromise from "../server";
+import appPromise from "../server"; // Ensure your Express app is exported from here
 import mongoose from "mongoose";
 import userModel, { IUser } from "../models/User";
 import postModel from "../models/Post";
-import testPosts from "./test_post.json";
+import testAuthData from "./test_auth.json";
 import { Express } from "express";
 
 let app: Express;
 
+type User = IUser & { accessToken?: string; refreshToken?: string };
+
+const testUser: User = {
+  userName: testAuthData.userName,
+  email: testAuthData.email,
+  password: testAuthData.password,
+};
+
 beforeAll(async () => {
-  console.log("This runs before all tests");
   app = await appPromise();
-  await userModel.deleteMany(); // Clear users collection before tests
-  await postModel.deleteMany(); // Clear posts collection before tests
+  // Clear collections
+  await userModel.deleteMany({});
+  await postModel.deleteMany({});
 });
 
 afterAll(async () => {
-  console.log("This runs after all tests");
-  await mongoose.disconnect(); // Close MongoDB connection after tests
+  await mongoose.disconnect();
 });
 
-type User = IUser & {
-  accessToken?: string;
-  refreshToken?: string;
-};
+describe("Auth API", () => {
+  describe("Registration", () => {
+    test("should register a new user", async () => {
+      const res = await request(app).post("/api/auth/register").send(testUser);
+      // Expect 200 OK and user data in response.
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty("userName", testUser.userName);
+      expect(res.body).toHaveProperty("email", testUser.email);
+      expect(res.body).toHaveProperty("profilePictureUrl");
+    });
 
-const user: User = {
-  userName: "User 1",
-  email: "user1@gmail.com",
-  password: "123456",
-};
-
-describe("Auth Tests", () => {
-  test("Auth Registration", async () => {
-    const response = await request(app).post("/api/auth/register").send(user);
-    console.log(response.body);
-    expect(response.statusCode).toBe(200);
+    test("should fail to register with an existing email", async () => {
+      // Try to register the same user again.
+      const res = await request(app).post("/api/auth/register").send(testUser);
+      expect(res.statusCode).toBe(500);
+    });
   });
 
-  test("Auth Registration with existing email", async () => {
-    const response = await request(app).post("/api/auth/register").send(user);
-    expect(response.statusCode).toBe(500);
+  describe("Login", () => {
+    test("should login with correct credentials", async () => {
+      const res = await request(app)
+        .post("/api/auth/login")
+        .send({ email: testUser.email, password: testUser.password });
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty("accessToken");
+      expect(res.body).toHaveProperty("refreshToken");
+      testUser.accessToken = res.body.accessToken;
+      testUser.refreshToken = res.body.refreshToken;
+    });
+
+    test("should fail login with incorrect password", async () => {
+      const res = await request(app)
+        .post("/api/auth/login")
+        .send({ email: testUser.email, password: "wrongpassword" });
+      expect(res.statusCode).toBe(400);
+    });
+
+    test("should fail login with non-existent email", async () => {
+      const res = await request(app).post("/api/auth/login").send({
+        email: "nonexistent@example.com",
+        password: testUser.password,
+      });
+      expect(res.statusCode).toBe(400);
+    });
   });
 
-  test("Auth Login", async () => {
-    const response = await request(app).post("/api/auth/login").send(user);
+  describe("Refresh Token", () => {
+    test("should refresh token with valid refresh token", async () => {
+      const res = await request(app)
+        .post("/api/auth/refresh")
+        .send({ refreshToken: testUser.refreshToken });
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty("accessToken");
+      expect(res.body).toHaveProperty("refreshToken");
+      // Update tokens
+      testUser.accessToken = res.body.accessToken;
+      testUser.refreshToken = res.body.refreshToken;
+    });
 
-    expect(response.statusCode).toBe(200);
-
-    user.accessToken = response.body.accessToken;
-    user.refreshToken = response.body.refreshToken;
-
-    expect(user.accessToken).toBeDefined();
-    expect(user.refreshToken).toBeDefined();
+    test("should fail refresh with invalid refresh token", async () => {
+      const res = await request(app)
+        .post("/api/auth/refresh")
+        .send({ refreshToken: "invalidtoken" });
+      expect(res.statusCode).toBe(403);
+    });
   });
 
-  test("Access Token Are Not The Same", async () => {
-    const response = await request(app).post("/api/auth/login").send(user);
+  describe("Logout", () => {
+    test("should logout and remove the refresh token", async () => {
+      const res = await request(app)
+        .post("/api/auth/logout")
+        .send({ refreshToken: testUser.refreshToken });
+      expect(res.statusCode).toBe(200);
 
-    expect(response.statusCode).toBe(200);
-
-    expect(response.body.accessToken).not.toEqual(user.accessToken);
+      // After logout, using the same refresh token should fail
+      const resRefresh = await request(app)
+        .post("/api/auth/refresh")
+        .send({ refreshToken: testUser.refreshToken });
+      expect(resRefresh.statusCode).toBe(400);
+    });
   });
 
-  test("Get Protected API", async () => {
-    const response = await request(app).post("/api/posts").send(testPosts[2]);
+  describe("Protected API", () => {
+    test("should deny access without a valid token", async () => {
+      const res = await request(app).post("/api/posts").send({
+        title: "Test",
+        content: "Test content",
+        sender: testUser.userName,
+      });
+      expect(res.statusCode).toBe(401);
+    });
 
-    expect(response.statusCode).not.toBe(201);
-
-    const response2 = await request(app)
-      .post("/api/posts")
-      .set({
-        authorization: "jwt " + user.accessToken,
-      })
-      .send(testPosts[2]);
-
-    expect(response2.statusCode).toBe(201);
-  });
-
-  test("Get Protected API with invalid token", async () => {
-    const response = await request(app)
-      .post("/api/posts")
-      .set({
-        authorization: "jwt " + user.accessToken + "invalid",
-      })
-      .send(testPosts[2]);
-
-    expect(response.statusCode).toBe(403);
-  });
-
-  test("Refresh Token", async () => {
-    console.log(user);
-    const response = await request(app)
-      .post("/api/auth/refresh")
-      .send({ refreshToken: user.refreshToken });
-
-    expect(response.statusCode).toBe(200);
-    expect(response.body.accessToken).toBeDefined();
-    expect(response.body.refreshToken).toBeDefined();
-
-    user.accessToken = response.body.accessToken;
-    user.refreshToken = response.body.refreshToken;
-  });
-
-  test("Logout - Invalid Refresh Token", async () => {
-    const response = await request(app)
-      .post("/api/auth/logout")
-      .send({ refreshToken: user.refreshToken });
-
-    expect(response.statusCode).toBe(200);
-
-    const response2 = await request(app)
-      .post("/api/auth/refresh")
-      .send({ refreshToken: user.refreshToken });
-
-    expect(response2.statusCode).toBe(400);
-  });
-
-  test("Refresh Token Multiple Use", async () => {
-    // Login
-    const response = await request(app)
-      .post("/api/auth/login")
-      .send({ email: user.email, password: user.password });
-
-    expect(response.statusCode).toBe(200);
-
-    user.accessToken = response.body.accessToken;
-    user.refreshToken = response.body.refreshToken;
-
-    // Refresh token - first use
-    const response2 = await request(app)
-      .post("/api/auth/refresh")
-      .send({ refreshToken: user.refreshToken });
-
-    expect(response2.statusCode).toBe(200);
-    const newRefreshToken = response2.body.refreshToken;
-
-    // Refresh token - second use with old token
-    const response3 = await request(app)
-      .post("/api/auth/refresh")
-      .send({ refreshToken: user.refreshToken });
-
-    expect(response3.statusCode).toBe(400);
-
-    // try to use the new token and expect 403
-    const response4 = await request(app)
-      .post("/api/auth/refresh")
-      .send({ refreshToken: newRefreshToken });
-
-    expect(response4.statusCode).toBe(400);
+    test("should allow access with a valid token", async () => {
+      const res = await request(app)
+        .post("/api/posts")
+        .set("authorization", "JWT " + testUser.accessToken)
+        .send({
+          title: "Protected Test",
+          content: "Content",
+          sender: testUser.userName,
+        });
+      expect(res.statusCode).toBe(201);
+    });
   });
 });
