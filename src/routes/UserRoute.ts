@@ -11,4 +11,9 @@ router.put(
   upload.single("profilePicture"),
   userController.updateUser.bind(userController)
 );
+router.put(
+  "/google/:userName",
+  upload.single("profilePicture"),
+  userController.updateGoogleUser.bind(userController)
+);
 export default router;
