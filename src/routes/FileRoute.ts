@@ -6,7 +6,6 @@ import { authMiddleware } from "../controllers/authController";
 
 const router = express.Router();
 
-const base = process.env.DOMAIN_BASE + "/"; // Base URL for file access
 const uploadDir = "public/"; // Directory where files will be stored
 
 if (!fs.existsSync(uploadDir)) {
