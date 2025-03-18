@@ -16,6 +16,10 @@ class PostsController extends baseController<IPost> {
       req.params.userName || req.body.sender
     );
     const body = req.body;
+    // Added
+    console.log("req.body:", req.body);
+    console.log("req.file:", req.file);
+
     let pictureUrl: string = body.pictureUrl || "";
 
     // If a new file is uploaded, process it.
