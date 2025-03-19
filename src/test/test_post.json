@@ -1,22 +1,23 @@
 [
   {
-    "title": "1",
-    "content": "Post 1",
-    "sender": "User 1",
-    "pictureUrl": "http://localhost:3000/public/default_profile.png",
-    "likes": ["User 2", "User 3"]
+    "title": "First Test Post",
+    "content": "This is the content of the first test post.",
+    "sender": "User1",
+    "pictureUrl": "http://localhost:3000/public/default.png",
+    "likes": ["User2", "User3"]
   },
   {
-    "title": "2",
-    "content": "Post 2",
-    "sender": "User 2",
+    "title": "Second Test Post",
+    "content": "This is the content of the second test post.",
+    "sender": "User2",
     "pictureUrl": "http://example.com/images/post2.png",
     "likes": []
   },
   {
-    "title": "3",
-    "content": "Post 3",
-    "sender": "User 1",
-    "likes": ["User 2"]
+    "title": "Third Test Post",
+    "content": "This is the content of the third test post.",
+    "sender": "User1",
+    "pictureUrl": "",
+    "likes": ["User2"]
   }
 ]

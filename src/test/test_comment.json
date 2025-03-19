@@ -1,10 +1,10 @@
 [
-    {
-        "content": "This is a comment",
-        "sender": "User 1"
-    },
-    {
-        "content": "This is another comment",
-        "sender": "User 2"
-    }
+  {
+    "content": "This is a comment from test data.",
+    "sender": "User1"
+  },
+  {
+    "content": "This is another comment from test data.",
+    "sender": "User2"
+  }
 ]
