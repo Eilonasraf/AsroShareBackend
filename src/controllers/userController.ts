@@ -60,6 +60,10 @@ class UserController extends baseController<IUser> {
       if (profilePictureUrl) {
         updatedUser.profilePictureUrl = profilePictureUrl;
       }
+
+      if (req.body.bio) {
+        updatedUser.bio = req.body.bio;
+      }
   
       // Find Google user and update
       const userToUpdate = await userModel.findOne({ userName: req.params.userName });
@@ -107,7 +111,29 @@ class UserController extends baseController<IUser> {
         const oldPath = req.body.oldProfilePictureUrl
 
         console.log("Old path:", oldPath);
+        if (oldPath === "default_profile.png") {
+          console.log("Default profile picture, no need to delete.");
+          
+          try {
+            const fileResponse = await axios.post(
+              "http://localhost:3000/api/file/",
+              fileFormData,
+              {
+                headers: {
+                  ...fileFormData.getHeaders(),
+                  Authorization: req.headers.authorization,
+                },
+              }
+            );
+  
+            console.log("File upload response:", fileResponse.data);
+            profilePictureUrl = fileResponse.data.url;
+  
+          } catch (error) {
+            console.error("Error uploading file:", error);
+          }
 
+        } else {
         try {
           const fileResponse = await axios.put(
             "http://localhost:3000/api/file/" + oldPath,
@@ -127,6 +153,7 @@ class UserController extends baseController<IUser> {
           console.error("Error uploading file:", error);
         }
       }
+      }
 
       // Build the partial update object for the user.
       const updatedUser: Partial<IUser> = {};
@@ -138,6 +165,11 @@ class UserController extends baseController<IUser> {
         console.log("Updating profile picture URL:", profilePictureUrl);
         updatedUser.profilePictureUrl = profilePictureUrl;
       }
+
+      if (req.body.bio) {
+        updatedUser.bio = req.body.bio;
+      }
+      
 
       // Overwrite req.body with the update object.
       req.body = updatedUser;

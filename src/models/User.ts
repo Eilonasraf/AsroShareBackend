@@ -8,6 +8,7 @@ export interface IUser {
   googleId?: string; // Optional
   profilePictureUrl?: string;
   refreshTokens?: string[];
+  bio?: string;
 }
 
 const userSchema = new mongoose.Schema<IUser>({
@@ -43,6 +44,11 @@ const userSchema = new mongoose.Schema<IUser>({
     default: [],
     required: true,
   },
+  bio: { 
+    type: String, 
+    default: "" 
+  },
+
 });
 
 const userModel = mongoose.model<IUser>("User", userSchema);
