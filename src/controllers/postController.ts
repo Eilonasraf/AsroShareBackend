@@ -165,6 +165,7 @@ class PostsController extends baseController<IPost> {
     try {
       const postId = req.params.id;
       const username: string = req.body.username;
+      const userId = req.body.userId;
 
       // Check if the username is valid
       if (!username || username === "Anonymous") {
@@ -191,15 +192,15 @@ class PostsController extends baseController<IPost> {
         post.likes = [];
       }
 
-      const index = post.likes.indexOf(username);
+      const index = post.likes.indexOf(userId);
       if (index === -1) {
         // User has not liked the post; add the username.
-        post.likes.push(username);
-        console.log(`Added ${username} to likes.`);
+        post.likes.push(userId);
+        console.log(`Added ${userId} to likes.`);
       } else {
         // User already liked the post; remove the username.
         post.likes.splice(index, 1);
-        console.log(`Removed ${username} from likes.`);
+        console.log(`Removed ${userId} from likes.`);
       }
 
       await post.save();

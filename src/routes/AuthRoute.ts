@@ -65,13 +65,16 @@ const upload = multer();
 router.post(
   "/register",
   upload.single("profilePicture"),
-  authController.register
+  async (req, res, next) => {
+    try {
+      await authController.register(req, res);
+    } catch (error) {
+      next(error);
+    }
+  }
 );
 
-router.post(
-  "/google", 
-  authController.googleSignin
-);
+router.post("/google", authController.googleSignin);
 
 /**
  * @swagger

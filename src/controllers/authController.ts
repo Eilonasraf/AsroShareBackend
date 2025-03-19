@@ -37,7 +37,7 @@ const googleSignin = async (req: Request, res: Response): Promise<void> => {
     if (!user) {
       user = await User.create({
         email: email,
-        userName: email.split('@')[0] || "New User",
+        userName: email.split("@")[0] || "New User",
         googleId: payload.sub, // Store Google ID
         profilePictureUrl: payload?.picture,
       });
@@ -105,6 +105,26 @@ const register = async (req: Request, res: Response) => {
   if (!userName || !email || !password) {
     res.status(400).send("Email, username, and password required");
     return;
+  }
+
+  try {
+    const existingUser = await userModel.findOne({ userName: userName });
+    if (existingUser) {
+      return res.status(400).json({ error: "Username already exists" });
+    }
+  } catch (error) {
+    console.error("Error checking for existing user:", error);
+    return res.status(500).json({ error: "Server error" });
+  }
+
+  try {
+    const existingEmail = await userModel.findOne({ email: email });
+    if (existingEmail) {
+      return res.status(400).json({ error: "Email already exists" });
+    }
+  } catch (error) {
+    console.error("Error checking for existing email:", error);
+    return res.status(500).json({ error: "Server error" });
   }
 
   try {
@@ -223,7 +243,8 @@ const login = async (req: Request, res: Response) => {
     res.status(200).send({
       userName: user.userName,
       email: user.email,
-      profilePictureUrl:"http://localhost:3000/public/" + user.profilePictureUrl,
+      profilePictureUrl:
+        "http://localhost:3000/public/" + user.profilePictureUrl,
       _id: user._id,
       accessToken: accessToken,
       refreshToken: refreshToken,

@@ -6,6 +6,7 @@ import multer from "multer";
 const upload = multer();
 
 router.get("/:userName", userController.getUserByUsername.bind(userController));
+router.get("/id/:id", userController.getUserById.bind(userController));
 router.put(
   "/:userName",
   upload.single("profilePicture"),
