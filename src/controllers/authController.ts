@@ -14,46 +14,57 @@ type Payload = {
 
 const client = new OAuth2Client();
 
+// Google Signin: Called immediately when a user logs in with Google
 const googleSignin = async (req: Request, res: Response): Promise<void> => {
-  console.log(req.body);
+  // Sensitive logging removed
   try {
     const ticket = await client.verifyIdToken({
       idToken: req.body.credential,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
-
     const payload = ticket.getPayload();
     const email = payload?.email;
-
     if (!email) {
       res.status(400).send("Google authentication failed: No email found.");
-      return; // Make sure to return here
+      return;
     }
-
-    // Check if user exists in DB
-    let user = await User.findOne({ email: email });
-
-    // Create user if not exists
+    // Check if a user with this email already exists
+    let user = await User.findOne({ email });
     if (!user) {
+      // Derive a username from email
+      const derivedUserName = email.split("@")[0] || "New User";
+      // Check if that derived username already exists
+      const existingUserName = await User.findOne({
+        userName: derivedUserName,
+      });
+      if (existingUserName) {
+        // Conflict: send a 409 so the frontend can prompt for a new username
+        res.status(409).json({
+          error: "Username already exists",
+          message: "Please choose another username",
+          email,
+          suggestedUserName: derivedUserName,
+        });
+        return;
+      }
+      // Username is available; create a new Google user
       user = await User.create({
-        email: email,
-        userName: email.split("@")[0] || "New User",
-        googleId: payload.sub, // Store Google ID
+        email,
+        userName: derivedUserName,
+        googleId: payload.sub,
         profilePictureUrl: payload?.picture,
       });
     }
-    // Generate Tokens
+    // Generate tokens using the helper function
     const tokens = await GoogleGenerateTokens(user);
-
     if (!tokens) {
       res.status(500).send("Error generating tokens");
       return;
     }
-    // Save refresh token to MongoDB
+    // Save the refresh token
     user.refreshTokens = user.refreshTokens || [];
     user.refreshTokens.push(tokens.refreshToken);
-    await user.save(); // Saving the new refresh token
-
+    await user.save();
     res.status(200).json({
       userName: user.userName,
       email: user.email,
@@ -67,32 +78,91 @@ const googleSignin = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-// Google generateTokens
 const GoogleGenerateTokens = async (user: any) => {
   const random = Math.floor(Math.random() * 1000000);
-
   if (!process.env.TOKEN_SECRET) {
     return null;
   }
   const accessToken = jwt.sign(
     {
-      _id: user._id, // Include only user ID
+      _id: user._id,
       email: user.email,
-      random: random,
+      random,
     },
     process.env.TOKEN_SECRET,
     { expiresIn: process.env.ACCESS_TOKEN_EXPIRATION } as SignOptions
   );
-
   const refreshToken = jwt.sign(
     {
-      _id: user._id, // Only store ID, not full user object
-      random: random,
+      _id: user._id,
+      random,
     },
     process.env.TOKEN_SECRET,
     { expiresIn: process.env.REFRESH_TOKEN_EXPIRATION } as SignOptions
   );
   return { accessToken, refreshToken };
+};
+
+// Google Complete: Called when a Google user’s default username conflicts.
+// The frontend will call this endpoint (after the user enters a new username)
+const googleComplete = async (req: Request, res: Response): Promise<void> => {
+  const { credential, newUsername } = req.body;
+  if (!credential || !newUsername) {
+    res.status(400).json({ error: "Credential and newUsername are required." });
+    return;
+  }
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    const email = payload?.email;
+    if (!email) {
+      res
+        .status(400)
+        .json({ error: "Google authentication failed: No email found." });
+      return;
+    }
+    // Check if the chosen new username is already taken
+    const usernameTaken = await User.findOne({ userName: newUsername });
+    if (usernameTaken) {
+      res.status(409).json({ error: "Username already exists" });
+      return;
+    }
+    // Find the user by email, or create one if needed
+    let user = await User.findOne({ email });
+    if (user) {
+      // Update the existing user's username
+      user.userName = newUsername;
+    } else {
+      // Create a new user with the chosen username
+      user = await User.create({
+        email,
+        userName: newUsername,
+        googleId: payload?.sub,
+        profilePictureUrl: payload?.picture || "default_profile.png",
+      });
+    }
+    const tokens = await GoogleGenerateTokens(user);
+    if (!tokens) {
+      res.status(500).json({ error: "Error generating tokens" });
+      return;
+    }
+    user.refreshTokens = user.refreshTokens || [];
+    user.refreshTokens.push(tokens.refreshToken);
+    await user.save();
+    res.status(200).json({
+      userName: user.userName,
+      email: user.email,
+      profilePictureUrl: user.profilePictureUrl,
+      _id: user._id,
+      ...tokens,
+    });
+  } catch (err) {
+    console.error("Error in googleComplete:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
 };
 
 const register = async (req: Request, res: Response) => {
@@ -424,4 +494,11 @@ export const authMiddleware = (
   });
 };
 
-export default { register, googleSignin, login, refresh, logout };
+export default {
+  register,
+  googleComplete,
+  googleSignin,
+  login,
+  refresh,
+  logout,
+};

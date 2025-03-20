@@ -76,6 +76,8 @@ router.post(
 
 router.post("/google", authController.googleSignin);
 
+router.post("/google/complete", authController.googleComplete);
+
 /**
  * @swagger
  * /api/auth/login:
