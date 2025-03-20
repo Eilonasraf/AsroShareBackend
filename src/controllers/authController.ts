@@ -277,15 +277,15 @@ const generateTokens = (
 };
 
 const login = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    res.status(400).send("Wrong email or password");
+  const { username, password } = req.body;
+  if (!username || !password) {
+    res.status(400).send("Wrong username or password");
     return;
   }
   try {
-    const user = await userModel.findOne({ email: email });
+    const user = await userModel.findOne({ userName: username });
     if (!user) {
-      res.status(400).send("Wrong email or password");
+      res.status(400).send("Wrong username or password");
       return;
     }
     const validPassword = await bcrypt.compare(password, user.password); // returns true or false
