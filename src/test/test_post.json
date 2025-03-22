@@ -2,22 +2,22 @@
   {
     "title": "First Test Post",
     "content": "This is the content of the first test post.",
-    "sender": "User1",
-    "pictureUrl": "http://localhost:3000/public/default.png",
-    "likes": ["User2", "User3"]
+    "sender": "507f1f77bcf86cd799439011",
+    "pictureUrl": "default.png",
+    "likes": ["507f1f77bcf86cd799439012", "507f1f77bcf86cd799439013"]
   },
   {
     "title": "Second Test Post",
     "content": "This is the content of the second test post.",
-    "sender": "User2",
-    "pictureUrl": "http://example.com/images/post2.png",
+    "sender": "507f1f77bcf86cd799439012",
+    "pictureUrl": "post2.png",
     "likes": []
   },
   {
     "title": "Third Test Post",
     "content": "This is the content of the third test post.",
-    "sender": "User1",
+    "sender": "507f1f77bcf86cd799439011",
     "pictureUrl": "",
-    "likes": ["User2"]
+    "likes": ["507f1f77bcf86cd799439012"]
   }
 ]

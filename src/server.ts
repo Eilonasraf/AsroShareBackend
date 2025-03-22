@@ -20,7 +20,7 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:" + process.env.PORT,
+        url: (process.env.DOMAIN_BASE || "") + process.env.PORT,
       },
     ],
   },
@@ -54,7 +54,10 @@ const initializeServer = async (): Promise<Express> => {
     // Added CORS Middleware Properly
     app.use(
       cors({
-        origin: ["http://localhost:5173", "https://yourfrontend.com"], // Change as needed
+        origin: [
+          (process.env.DOMAIN_BASE || "") + process.env.FRONTEND_PORT,
+          "https://yourfrontend.com",
+        ], // Change as needed
         methods: ["GET", "POST", "PUT", "DELETE"],
         allowedHeaders: ["Content-Type", "Authorization"],
         credentials: true, // Allow cookies from frontend

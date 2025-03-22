@@ -214,7 +214,7 @@ const register = async (req: Request, res: Response) => {
 
       try {
         const response = await axios.post(
-          "http://localhost:3000/api/file",
+          (process.env.DOMAIN_BASE || "") + process.env.PORT + "/api/file",
           fileFormData,
           {
             headers: {
@@ -277,13 +277,14 @@ const generateTokens = (
 };
 
 const login = async (req: Request, res: Response) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
+  const { userName, password } = req.body;
+  console.log("Received:", { reqBody: req.body });
+  if (!userName || !password) {
     res.status(400).send("Wrong username or password");
     return;
   }
   try {
-    const user = await userModel.findOne({ userName: username });
+    const user = await userModel.findOne({ userName: userName });
     if (!user) {
       res.status(400).send("Wrong username or password");
       return;
@@ -314,7 +315,10 @@ const login = async (req: Request, res: Response) => {
       userName: user.userName,
       email: user.email,
       profilePictureUrl:
-        "http://localhost:3000/public/" + user.profilePictureUrl,
+        (process.env.DOMAIN_BASE || "") +
+        process.env.PORT +
+        "/public/" +
+        user.profilePictureUrl,
       _id: user._id,
       accessToken: accessToken,
       refreshToken: refreshToken,
@@ -493,6 +497,8 @@ export const authMiddleware = (
     next();
   });
 };
+
+export { generateTokens };
 
 export default {
   register,

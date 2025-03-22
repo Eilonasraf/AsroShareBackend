@@ -3,6 +3,7 @@ import userModel, { IUser } from "../models/User";
 import baseController from "./baseController";
 import axios from "axios";
 import FormData from "form-data";
+import { console } from "inspector";
 
 class UserController extends baseController<IUser> {
   constructor() {
@@ -36,7 +37,7 @@ class UserController extends baseController<IUser> {
         // Upload without trying to delete anything
         try {
           const fileResponse = await axios.post(
-            "http://localhost:3000/api/file",
+            (process.env.DOMAIN_BASE || "") + process.env.PORT + "/api/file",
             fileFormData,
             {
               headers: {
@@ -125,7 +126,7 @@ class UserController extends baseController<IUser> {
 
           try {
             const fileResponse = await axios.post(
-              "http://localhost:3000/api/file/",
+              (process.env.DOMAIN_BASE || "") + process.env.PORT + "/api/file/",
               fileFormData,
               {
                 headers: {
@@ -143,7 +144,10 @@ class UserController extends baseController<IUser> {
         } else {
           try {
             const fileResponse = await axios.put(
-              "http://localhost:3000/api/file/" + oldPath,
+              (process.env.DOMAIN_BASE || "") +
+                process.env.PORT +
+                "/api/file/" +
+                oldPath,
               fileFormData,
               {
                 headers: {
@@ -165,6 +169,7 @@ class UserController extends baseController<IUser> {
       const updatedUser: Partial<IUser> = {};
       if (req.body.userName) {
         updatedUser.userName = req.body.userName;
+        console.log("Updating username:", req.body.userName);
       }
 
       if (profilePictureUrl) {
@@ -181,6 +186,7 @@ class UserController extends baseController<IUser> {
 
       // Call the parent's update method to perform the actual update.
       try {
+        console.log("Body:", req.body);
         await super.update(req, res);
         const userAfterUpdate = await userModel.findOne({
           userName: req.body.userName,

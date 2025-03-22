@@ -31,7 +31,7 @@ class PostsController extends baseController<IPost> {
       try {
         // For creation, simply post the file since there's no old file to replace.
         const fileResponse = await axios.post(
-          "http://localhost:3000/api/file/",
+          (process.env.DOMAIN_BASE || "") + process.env.PORT + "/api/file/",
           fileFormData,
           {
             headers: {
@@ -90,7 +90,10 @@ class PostsController extends baseController<IPost> {
       pictureUrl = "";
       try {
         const fileResponse = await axios.delete(
-          "http://localhost:3000/api/file/" + body.pictureUrl,
+          (process.env.DOMAIN_BASE || "") +
+            process.env.PORT +
+            "/api/file/" +
+            body.pictureUrl,
           {
             headers: {
               Authorization: req.headers.authorization || "",
@@ -118,7 +121,10 @@ class PostsController extends baseController<IPost> {
         if (oldPath) {
           // Delete the old file
           fileResponse = await axios.put(
-            "http://localhost:3000/api/file/" + oldPath,
+            (process.env.DOMAIN_BASE || "") +
+              process.env.PORT +
+              "/api/file/" +
+              oldPath,
             fileFormData,
             {
               headers: {
@@ -129,7 +135,7 @@ class PostsController extends baseController<IPost> {
           );
         } else {
           fileResponse = await axios.post(
-            "http://localhost:3000/api/file/",
+            (process.env.DOMAIN_BASE || "") + process.env.PORT + "/api/file/",
             fileFormData,
             {
               headers: {

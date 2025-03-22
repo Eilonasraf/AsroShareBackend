@@ -24,6 +24,7 @@
     "test:comment": "tsc && jest comment.test.ts --detectOpenHandles --coverage --runInBand --forceExit",
     "test:auth": "tsc && jest auth.test.ts --detectOpenHandles --coverage --runInBand --forceExit",
     "test:file": "tsc && jest file.test.ts --detectOpenHandles --coverage --runInBand --forceExit",
+    "test:user": "tsc && jest user.test.ts --detectOpenHandles --coverage --runInBand --forceExit",
     "lint": "eslint . --ext .ts"
   },
   "devDependencies": {

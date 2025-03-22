@@ -1,0 +1,13 @@
+{
+  "normalUser": {
+    "userName": "TestNormalUser",
+    "email": "normal@example.com",
+    "password": "normalpassword"
+  },
+  "googleUser": {
+    "userName": "TestGoogleUser",
+    "email": "google@example.com",
+    "googleId": "google123",
+    "password": ""
+  }
+}
