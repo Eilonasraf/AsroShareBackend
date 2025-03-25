@@ -4,6 +4,7 @@ import baseController from "./baseController";
 import axios from "axios";
 import FormData from "form-data";
 import { console } from "inspector";
+import { replaceFile, uploadFile } from "./fileController";
 
 class UserController extends baseController<IUser> {
   constructor() {
@@ -31,27 +32,10 @@ class UserController extends baseController<IUser> {
       if (req.file) {
         console.log("Google user uploaded a new picture.");
 
-        const fileFormData = new FormData();
-        fileFormData.append("file", req.file.buffer, req.file.originalname);
-
         // Upload without trying to delete anything
         try {
-          const fileResponse = await axios.post(
-            (process.env.DOMAIN_BASE || "") + process.env.PORT + "/api/file",
-            fileFormData,
-            {
-              headers: {
-                ...fileFormData.getHeaders(),
-                Authorization: req.headers.authorization,
-              },
-            }
-          );
-
-          console.log(
-            "Google user picture upload response:",
-            fileResponse.data
-          );
-          profilePictureUrl = fileResponse.data.url;
+          const fileResponse = await uploadFile(req.file);
+          profilePictureUrl = fileResponse.fileName;
         } catch (error) {
           console.error("Error uploading Google user's picture:", error);
           res.status(500).send({ error: "Failed to upload profile picture" });
@@ -109,14 +93,17 @@ class UserController extends baseController<IUser> {
 
     let profilePictureUrl: string | undefined;
 
+    if (req.file && (await uploadFile(req.file))) {
+      console.log("File uploaded successfully");
+    } else {
+      console.log("Error uploading file");
+    }
+
+
     try {
       // If a new file is uploaded, handle it like in the registration process.
       if (req.file) {
         console.log("File uploaded for update.");
-
-        // Create a FormData instance and append the file buffer.
-        const fileFormData = new FormData();
-        fileFormData.append("file", req.file.buffer, req.file.originalname);
 
         const oldPath = req.body.oldProfilePictureUrl;
 
@@ -125,44 +112,24 @@ class UserController extends baseController<IUser> {
           console.log("Default profile picture, no need to delete.");
 
           try {
-            const fileResponse = await axios.post(
-              (process.env.DOMAIN_BASE || "") + process.env.PORT + "/api/file/",
-              fileFormData,
-              {
-                headers: {
-                  ...fileFormData.getHeaders(),
-                  Authorization: req.headers.authorization,
-                },
-              }
-            );
+            const fileResponse = await uploadFile(req.file);
 
-            console.log("File upload response:", fileResponse.data);
-            profilePictureUrl = fileResponse.data.url;
+            profilePictureUrl = fileResponse.fileName;
           } catch (error) {
             console.error("Error uploading file:", error);
+
           }
         } else {
           try {
-            const fileResponse = await axios.put(
-              (process.env.DOMAIN_BASE || "") +
-                process.env.PORT +
-                "/api/file/" +
-                oldPath,
-              fileFormData,
-              {
-                headers: {
-                  ...fileFormData.getHeaders(),
-                  Authorization: req.headers.authorization,
-                },
-              }
-            );
+            const fileResponse = await replaceFile(req.file, oldPath);
 
-            console.log("File upload response:", fileResponse.data);
-            profilePictureUrl = fileResponse.data.url;
+            profilePictureUrl = fileResponse.fileName;
           } catch (error) {
             console.error("Error uploading file:", error);
           }
         }
+      } else {
+        console.log("No file uploaded for update.");
       }
 
       // Build the partial update object for the user.

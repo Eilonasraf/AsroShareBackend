@@ -59,17 +59,10 @@ const upload = multer();
  *       - Posts
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: userName
- *         required: true
- *         schema:
- *           type: string
- *         description: The username of the user creating the post
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
@@ -85,29 +78,20 @@ const upload = multer();
  *                 description: The content of the post
  *               sender:
  *                 type: string
- *                 description: The username of the user who created the post
+ *                 description: The username of the user creating the post
+ *               photo:
+ *                 type: string
+ *                 format: binary
+ *                 description: The picture file for the post
  *     responses:
  *       201:
  *         description: Post created successfully
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 _id:
- *                   type: string
- *                   description: The post ID
- *                 title:
- *                   type: string
- *                   description: The title of the post
- *                 content:
- *                   type: string
- *                   description: The content of the post
- *                 sender:
- *                   type: string
- *                   description: The username of the user who created the post
+ *               $ref: '#/components/schemas/Post'
  *       400:
- *         description: Missing required fields (title or content)
+ *         description: Missing required fields (title, content, or sender)
  *       500:
  *         description: Internal server error
  */
@@ -213,13 +197,29 @@ router.get(
  *         required: true
  *         schema:
  *           type: string
- *         description: The ID of the post
+ *         description: The ID of the post to update
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/Post'
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               content:
+ *                 type: string
+ *               photo:
+ *                 type: string
+ *                 format: binary
+ *               deletePhoto:
+ *                 type: boolean
+ *               oldPictureUrl:
+ *                 type: string
+ *             example:
+ *               title: "Updated Post"
+ *               content: "Updated content"
+ *               deletePhoto: false
  *     responses:
  *       200:
  *         description: Post updated successfully
@@ -239,12 +239,93 @@ router.put(
   postController.updatePost.bind(postController)
 );
 
+/**
+ * @swagger
+ * /api/posts/like/{id}:
+ *   post:
+ *     summary: Toggle like for a post
+ *     tags:
+ *       - Posts
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the post to toggle like
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - userId
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 description: The username of the user toggling like
+ *               userId:
+ *                 type: string
+ *                 description: The user ID of the user toggling like
+ *     responses:
+ *       200:
+ *         description: Post updated successfully with toggled like status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Post'
+ *       400:
+ *         description: Invalid username provided
+ *       404:
+ *         description: Post not found
+ *       500:
+ *         description: Internal server error
+ */
 router.post(
   "/like/:id",
   authMiddleware,
   postController.toggleLike.bind(postController)
 );
 
+/**
+ * @swagger
+ * /api/posts/{id}:
+ *   delete:
+ *     summary: Deletes a post by ID
+ *     tags:
+ *       - Posts
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the post to delete
+ *     requestBody:
+ *       description: Optional pictureUrl to delete the associated file
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               pictureUrl:
+ *                 type: string
+ *                 description: The URL of the picture to delete
+ *     responses:
+ *       200:
+ *         description: Post deleted successfully
+ *       404:
+ *         description: Post not found
+ *       500:
+ *         description: Internal server error
+ */
 router.delete(
   "/:id",
   authMiddleware,

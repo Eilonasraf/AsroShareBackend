@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
 import cors from "cors";
+import path from "path";
 
 dotenv.config();
 
@@ -52,20 +53,26 @@ const initializeServer = async (): Promise<Express> => {
     app.use(express.json());
 
     // Added CORS Middleware Properly
+    //  [
+    //       (process.env.DOMAIN_BASE || "") + process.env.PORT,
+    //       "https://yourfrontend.com",
+    //     ]
     app.use(
       cors({
-        origin: [
-          (process.env.DOMAIN_BASE || "") + process.env.FRONTEND_PORT,
-          "https://yourfrontend.com",
-        ], // Change as needed
+        origin: "*", // Change as needed
         methods: ["GET", "POST", "PUT", "DELETE"],
         allowedHeaders: ["Content-Type", "Authorization"],
         credentials: true, // Allow cookies from frontend
       })
     );
+    
     app.options("*", cors());
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
+
+    // Serve the React frontend
+    app.use(express.static(path.join(__dirname, "../../front")));
+    app.get('/', (req, res) => {res.send('Server');});
 
     // Use routers
     app.use("/", indexRouter);
@@ -75,7 +82,7 @@ const initializeServer = async (): Promise<Express> => {
     app.use("/api/file", fileRouter);
     app.use("/api/astronomy", AstronomyApiRoute);
     app.use("/api/users", UserRoute);
-    app.use("/public", express.static("public"));
+    app.use('/public', express.static(path.join(__dirname, "../../public/")));
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
     app.use("/api/ai", AiRoute);
 

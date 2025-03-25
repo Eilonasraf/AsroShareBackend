@@ -52,18 +52,18 @@ const upload = multer();
  *     parameters:
  *       - in: path
  *         name: userName
+ *         required: true
  *         schema:
  *           type: string
- *         required: true
  *         description: The username of the user to retrieve.
  *     responses:
- *       200:
+ *       '200':
  *         description: A user object.
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/User'
- *       404:
+ *       '404':
  *         description: User not found.
  */
 router.get("/:userName", userController.getUserByUsername.bind(userController));
@@ -72,25 +72,25 @@ router.get("/:userName", userController.getUserByUsername.bind(userController));
  * @swagger
  * /api/users/id/{id}:
  *   get:
- *     summary: Get user by ID
  *     tags:
  *       - Users
+ *     summary: Get user by ID
  *     description: Retrieve a user by their MongoDB ID.
  *     parameters:
  *       - in: path
  *         name: id
+ *         required: true
  *         schema:
  *           type: string
- *         required: true
  *         description: The MongoDB ID of the user.
  *     responses:
- *       200:
+ *       '200':
  *         description: A user object.
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/User'
- *       404:
+ *       '404':
  *         description: User not found.
  */
 router.get("/id/:id", userController.getUserById.bind(userController));
@@ -99,18 +99,16 @@ router.get("/id/:id", userController.getUserById.bind(userController));
  * @swagger
  * /api/users/{userName}:
  *   put:
- *     summary: Update a user
  *     tags:
  *       - Users
+ *     summary: Update a user
  *     description: Update user's username, profile picture, or bio.
- *     consumes:
- *       - multipart/form-data
  *     parameters:
  *       - in: path
  *         name: userName
+ *         required: true
  *         schema:
  *           type: string
- *         required: true
  *         description: The username of the user to update.
  *     requestBody:
  *       required: true
@@ -133,15 +131,15 @@ router.get("/id/:id", userController.getUserById.bind(userController));
  *                 format: binary
  *                 description: New profile picture file.
  *     responses:
- *       200:
+ *       '200':
  *         description: The updated user object.
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/User'
- *       400:
+ *       '400':
  *         description: Bad request.
- *       500:
+ *       '500':
  *         description: Internal server error.
  */
 router.put(
@@ -154,18 +152,16 @@ router.put(
  * @swagger
  * /api/users/google/{userName}:
  *   put:
- *     summary: Update a Google user
  *     tags:
  *       - Users
+ *     summary: Update a Google user
  *     description: Update a Google user's username, profile picture, or bio.
- *     consumes:
- *       - multipart/form-data
  *     parameters:
  *       - in: path
  *         name: userName
+ *         required: true
  *         schema:
  *           type: string
- *         required: true
  *         description: The username of the Google user to update.
  *     requestBody:
  *       required: true
@@ -185,15 +181,15 @@ router.put(
  *                 format: binary
  *                 description: New profile picture file.
  *     responses:
- *       200:
+ *       '200':
  *         description: The updated Google user object.
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/User'
- *       400:
+ *       '400':
  *         description: Bad request.
- *       500:
+ *       '500':
  *         description: Internal server error.
  */
 router.put(

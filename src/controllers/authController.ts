@@ -7,6 +7,7 @@ import axios from "axios";
 import FormData from "form-data";
 import { OAuth2Client } from "google-auth-library";
 import User from "../models/User";
+import { uploadFile } from "./fileController";
 
 type Payload = {
   _id: string;
@@ -203,28 +204,9 @@ const register = async (req: Request, res: Response) => {
     let profilePictureUrl = "default_profile.png";
 
     if (profilePicture) {
-      // Create a FormData instance for forwarding the file
-      const fileFormData = new FormData();
-      // Append the file buffer with the field name 'file' to match the upload route
-      fileFormData.append(
-        "file",
-        profilePicture.buffer,
-        profilePicture.originalname
-      );
-
       try {
-        const response = await axios.post(
-          (process.env.DOMAIN_BASE || "") + process.env.PORT + "/api/file",
-          fileFormData,
-          {
-            headers: {
-              // formData.getHeaders() sets the correct multipart headers
-              ...fileFormData.getHeaders(),
-            },
-          }
-        );
-        console.log("File upload response:", response.data);
-        profilePictureUrl = response.data.url;
+        const response = await uploadFile(profilePicture);
+        profilePictureUrl = response.fileName || "default_profile.png";
       } catch (error) {
         console.error("Error uploading file:", error);
       }

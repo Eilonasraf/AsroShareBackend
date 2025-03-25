@@ -6,11 +6,14 @@ import { authMiddleware } from "../controllers/authController";
 
 const router = express.Router();
 
-const uploadDir = "public/"; // Directory where files will be stored
+// const uploadDir = "public/"; // Directory where files will be stored
+const uploadDir = path.join(__dirname, "../../public/");
 
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
+
+console.log("Upload directory:", uploadDir);
 
 // Configure Multer for file uploads
 const storage = multer.diskStorage({
@@ -72,7 +75,7 @@ const upload = multer({ storage: storage });
 router.post(
   "/",
   upload.single("file"),
-  authMiddleware,
+  // authMiddleware,
   (req: Request, res: Response): void => {
     console.log(req.file);
     if (!req.file) {
@@ -136,7 +139,7 @@ router.post(
  */
 router.put(
   "/:filename",
-  authMiddleware,
+  // authMiddleware,
   upload.single("file"),
   (req: Request, res: Response): void => {
     const oldFilePath = path.join(uploadDir, req.params.filename);
@@ -208,7 +211,7 @@ router.put(
  *       500:
  *         description: Error deleting file
  */
-router.delete("/:filename", authMiddleware, (req, res) => {
+router.delete("/:filename", (req, res) => {
   const filePath = path.join(uploadDir, req.params.filename); // Construct file path
 
   // Delete the file

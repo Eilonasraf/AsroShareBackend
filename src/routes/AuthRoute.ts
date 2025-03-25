@@ -7,10 +7,6 @@ const upload = multer();
 
 /**
  * @swagger
- * tags:
- *   - name: Auth
- *     description: Authentication API
- *
  * components:
  *   securitySchemes:
  *     bearerAuth:
@@ -19,25 +15,45 @@ const upload = multer();
  *       bearerFormat: JWT
  *
  *   schemas:
- *     User:
+ *     RegisterUser:
  *       type: object
  *       required:
- *         - name
+ *         - userName
  *         - email
  *         - password
  *       properties:
- *         name:
+ *         userName:
  *           type: string
- *           description: The user's full name
+ *           description: The user's username
  *         email:
  *           type: string
  *           description: The user's email
  *         password:
  *           type: string
  *           description: The user's password
+ *         profilePicture:
+ *           type: string
+ *           format: binary
+ *           description: The user's profile picture (optional)
  *       example:
- *         name: "Bob Smith"
+ *         userName: "BobSmith"
  *         email: "bob@gmail.com"
+ *         password: "123456"
+ *
+ *     LoginUser:
+ *       type: object
+ *       required:
+ *         - userName
+ *         - password
+ *       properties:
+ *         userName:
+ *           type: string
+ *           description: The user's username
+ *         password:
+ *           type: string
+ *           description: The user's password
+ *       example:
+ *         userName: "BobSmith"
  *         password: "123456"
  */
 
@@ -51,9 +67,9 @@ const upload = multer();
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/User'
+ *             $ref: '#/components/schemas/RegisterUser'
  *     responses:
  *       200:
  *         description: The new user registered successfully
@@ -90,17 +106,7 @@ router.post("/google/complete", authController.googleComplete);
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
- *             properties:
- *               email:
- *                 type: string
- *                 description: The user's email
- *               password:
- *                 type: string
- *                 description: The user's password
+ *             $ref: '#/components/schemas/LoginUser'
  *     responses:
  *       200:
  *         description: The user logged in successfully

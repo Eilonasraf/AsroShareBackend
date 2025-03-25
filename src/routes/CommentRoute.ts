@@ -3,6 +3,7 @@ const router = express.Router();
 import commentController from '../controllers/commentController';
 import { authMiddleware } from '../controllers/authController';
 
+
 /**
  * @swagger
  * tags:
@@ -39,7 +40,6 @@ import { authMiddleware } from '../controllers/authController';
  *         postId: "65a2b8e4f3d6a9134b789123"
  */
 
-
 /**
  * @swagger
  * /api/comments:
@@ -49,55 +49,21 @@ import { authMiddleware } from '../controllers/authController';
  *       - Comments
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: userId
- *         required: true
- *         schema:
- *           type: string
- *         description: The ID of the user creating the comment
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - content
- *               - sender
- *               - postId
- *             properties:
- *               content:
- *                 type: string
- *                 description: The content of the comment
- *               sender:
- *                type: string
- *                description: The user ID who wrote the comment
- *               postId:
- *                 type: string
- *                 description: The ID of the post this comment belongs to
+ *             $ref: '#/components/schemas/Comment'
  *     responses:
  *       201:
  *         description: Comment created successfully
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 _id:
- *                   type: string
- *                   description: The comment ID
- *                 content:
- *                   type: string
- *                   description: The content of the comment
- *                 sender:
- *                   type: string
- *                   description: The user who wrote the comment
- *                 postId:
- *                   type: string
- *                   description: The ID of the post this comment belongs to
+ *               $ref: '#/components/schemas/Comment'
  *       400:
- *         description: Missing required fields (content or postId)
+ *         description: Missing required fields (content, sender, or postId)
  *       500:
  *         description: Internal server error
  */
@@ -123,20 +89,7 @@ router.post('/', authMiddleware, commentController.createComment.bind(commentCon
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 _id:
- *                   type: string
- *                   description: The comment ID
- *                 content:
- *                   type: string
- *                   description: The content of the comment
- *                 sender:
- *                   type: string
- *                   description: The user who wrote the comment
- *                 postId:
- *                   type: string
- *                   description: The ID of the post this comment belongs to
+ *               $ref: '#/components/schemas/Comment'
  *       404:
  *         description: Comment not found
  *       500:
@@ -165,37 +118,14 @@ router.get('/:id', commentController.getCommentById.bind(commentController));
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               content:
- *                 type: string
- *                 description: The content of the comment
- *               sender:
- *                 type: string
- *                 description: The user ID who wrote the comment
- *               postId:
- *                 type: string
- *                 description: The ID of the post this comment belongs to
+ *             $ref: '#/components/schemas/Comment'
  *     responses:
  *       200:
  *         description: Comment updated successfully
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 _id:
- *                   type: string
- *                   description: The comment ID
- *                 content:
- *                   type: string
- *                   description: The content of the comment
- *                 sender:
- *                   type: string
- *                   description: The user who wrote the comment
- *                 postId:
- *                   type: string
- *                   description: The ID of the post this comment belongs to
+ *               $ref: '#/components/schemas/Comment'
  *       404:
  *         description: Comment not found
  *       500:

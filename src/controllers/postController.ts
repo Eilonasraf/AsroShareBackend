@@ -4,6 +4,7 @@ import axios from "axios";
 import FormData from "form-data";
 import postModel, { IPost } from "../models/Post";
 import baseController from "./baseController";
+import { deleteFile, replaceFile, uploadFile } from "./fileController";
 
 class PostsController extends baseController<IPost> {
   constructor() {
@@ -30,18 +31,8 @@ class PostsController extends baseController<IPost> {
 
       try {
         // For creation, simply post the file since there's no old file to replace.
-        const fileResponse = await axios.post(
-          (process.env.DOMAIN_BASE || "") + process.env.PORT + "/api/file/",
-          fileFormData,
-          {
-            headers: {
-              ...fileFormData.getHeaders(),
-              Authorization: req.headers.authorization || "",
-            },
-          }
-        );
-        console.log("File upload response:", fileResponse.data);
-        pictureUrl = fileResponse.data.url;
+        const fileResponse = await uploadFile(req.file);
+        pictureUrl = fileResponse.fileName || "";
       } catch (error) {
         console.error("Error uploading file:", (error as Error).message);
       }
@@ -89,18 +80,7 @@ class PostsController extends baseController<IPost> {
     if (body.deletePhoto === "true" || body.deletePhoto === true) {
       pictureUrl = "";
       try {
-        const fileResponse = await axios.delete(
-          (process.env.DOMAIN_BASE || "") +
-            process.env.PORT +
-            "/api/file/" +
-            body.pictureUrl,
-          {
-            headers: {
-              Authorization: req.headers.authorization || "",
-            },
-          }
-        );
-        console.log("File deletion response:", fileResponse.data);
+        const fileResponse = await deleteFile(body.oldPictureUrl);
       } catch (error) {
         console.error("Error deleting file:", (error as Error).message);
       }
@@ -108,45 +88,18 @@ class PostsController extends baseController<IPost> {
 
     // If a new file is uploaded, process it.
     if (req.file) {
-      console.log("File uploaded for update:", req.file.originalname);
-      const fileFormData = new FormData();
-      fileFormData.append("file", req.file.buffer, req.file.originalname);
-
       // Optionally, pass the old picture URL to the file endpoint.
       const oldPath = body.oldPictureUrl;
-      console.log("Old picture path:", oldPath);
 
       try {
         let fileResponse;
         if (oldPath) {
           // Delete the old file
-          fileResponse = await axios.put(
-            (process.env.DOMAIN_BASE || "") +
-              process.env.PORT +
-              "/api/file/" +
-              oldPath,
-            fileFormData,
-            {
-              headers: {
-                ...fileFormData.getHeaders(),
-                Authorization: req.headers.authorization || "",
-              },
-            }
-          );
+          fileResponse = await replaceFile(req.file, oldPath);
         } else {
-          fileResponse = await axios.post(
-            (process.env.DOMAIN_BASE || "") + process.env.PORT + "/api/file/",
-            fileFormData,
-            {
-              headers: {
-                ...fileFormData.getHeaders(),
-                Authorization: req.headers.authorization || "",
-              },
-            }
-          );
+          fileResponse = await uploadFile(req.file);
         }
-        console.log("File upload response:", fileResponse.data);
-        pictureUrl = fileResponse.data.url;
+        pictureUrl = fileResponse.fileName || "";
       } catch (error) {
         console.error("Error uploading file:", (error as Error).message);
       }
@@ -219,6 +172,9 @@ class PostsController extends baseController<IPost> {
   }
 
   async deletePost(req: Request, res: Response): Promise<void> {
+    if (req.body.pictureUrl) {
+      console.log(await deleteFile(req.body.pictureUrl));
+    }
     super.delete(req, res);
   }
 }

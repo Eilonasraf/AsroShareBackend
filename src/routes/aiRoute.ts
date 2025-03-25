@@ -21,18 +21,13 @@ const router = express.Router();
  *     security:
  *       - bearerAuth: []
  *     description: Generates an AI description based on a user-provided prompt using Google Gemini.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               prompt:
- *                 type: string
- *                 description: The prompt text to generate the description from
- *             example:
- *               prompt: "Write a short description about a trip to the desert"
+ *     parameters:
+ *       - in: query
+ *         name: prompt
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The prompt text to generate the description from.
  *     responses:
  *       200:
  *         description: Successfully generated description
