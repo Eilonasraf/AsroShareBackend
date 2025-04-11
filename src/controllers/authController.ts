@@ -3,8 +3,6 @@ import { Request, Response, NextFunction } from "express";
 import userModel, { IUser } from "../models/User";
 import bcrypt from "bcrypt";
 import jwt, { SignOptions } from "jsonwebtoken";
-import axios from "axios";
-import FormData from "form-data";
 import { OAuth2Client } from "google-auth-library";
 import User from "../models/User";
 import { uploadFile } from "./fileController";

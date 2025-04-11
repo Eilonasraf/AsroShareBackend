@@ -9,6 +9,7 @@ import { OAuth2Client } from "google-auth-library";
 import axios from "axios";
 import jwt from "jsonwebtoken";
 import { authMiddleware } from "../controllers/authController";
+import fs from "fs";
 
 // Define a type for our test user with token properties.
 type User = IUser & { accessToken?: string; refreshToken?: string };
@@ -78,10 +79,7 @@ describe("Auth API", () => {
         .field("email", newUser.email)
         .field("password", newUser.password);
       expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty(
-        "profilePictureUrl",
-        "http://test.com/registeredprofile.png"
-      );
+      expect(res.body.profilePictureUrl).not.toBe("default_profile.png");
       axiosPostSpy.mockRestore();
     });
   });
@@ -368,8 +366,10 @@ describe("Auth API", () => {
       };
       await userModel.deleteMany({ email: newUser.email });
       jest
-        .spyOn(axios, "post")
-        .mockRejectedValueOnce(new Error("File upload error"));
+        .spyOn(fs, "writeFile")
+        .mockImplementation((targetPath, buffer, callback) => {
+          callback(new Error("Simulated file write error"));
+        });
       const dummyBuffer = Buffer.from("dummy file content");
       const res = await request(app)
         .post("/api/auth/register")

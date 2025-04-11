@@ -2,7 +2,6 @@ import express, { Request, Response } from "express";
 import multer from "multer";
 import fs from "fs"; // File system module
 import path from "path"; // Path module
-import { authMiddleware } from "../controllers/authController";
 
 const router = express.Router();
 

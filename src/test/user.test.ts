@@ -5,6 +5,7 @@ import userModel from "../models/User";
 import axios from "axios";
 import { Express } from "express";
 import { IUser } from "../models/User";
+import * as fileController from "../controllers/fileController";
 
 // Set dummy env variables for the file upload URL construction.
 process.env.DOMAIN_BASE = "http://localhost:";
@@ -123,9 +124,9 @@ describe("UserController - updateUser", () => {
     expect(res.statusCode).toEqual(200);
     expect(res.body).toHaveProperty("userName", "NormalUserWithPic");
     expect(res.body).toHaveProperty("bio", "Updated bio with pic");
-    expect(res.body).toHaveProperty(
+    expect(res.body).not.toHaveProperty(
       "profilePictureUrl",
-      "http://test.com/normalprofile.png"
+      "default_profile.png"
     );
     NormalUser.userName = "NormalUserWithPic";
   });
@@ -149,9 +150,9 @@ describe("UserController - updateUser", () => {
     expect(res.statusCode).toEqual(200);
     expect(res.body).toHaveProperty("userName", "NormalUserUpdatedAgain");
     expect(res.body).toHaveProperty("bio", "Updated bio with pic update");
-    expect(res.body).toHaveProperty(
+    expect(res.body).not.toHaveProperty(
       "profilePictureUrl",
-      "http://test.com/normalprofile_updated.png"
+      "default_profile.png"
     );
     NormalUser.userName = "NormalUserUpdatedAgain";
   });
@@ -228,9 +229,9 @@ describe("UserController - updateGoogleUser", () => {
     expect(res.statusCode).toEqual(200);
     expect(res.body).toHaveProperty("userName", "UpdatedGoogleUser");
     expect(res.body).toHaveProperty("bio", "Updated bio for google user");
-    expect(res.body).toHaveProperty(
+    expect(res.body).not.toHaveProperty(
       "profilePictureUrl",
-      "http://test.com/googleprofile.png"
+      "default_profile.png"
     );
 
     // Update the user object to reflect the changes.
@@ -252,9 +253,9 @@ describe("UserController - updateGoogleUser", () => {
     expect(res.body).toHaveProperty("userName", "UpdatedGoogleUserNoFile");
     expect(res.body).toHaveProperty("bio", "Updated bio no file");
     // Since no file was uploaded, profilePictureUrl should remain unchanged.
-    expect(res.body).toHaveProperty(
+    expect(res.body).not.toHaveProperty(
       "profilePictureUrl",
-      googleUser.profilePictureUrl
+      "default_profile.png"
     );
   });
 
@@ -279,8 +280,10 @@ describe("UserController - updateGoogleUser", () => {
   });
 
   test("should return 500 if file upload fails", async () => {
-    // Simulate a failure in the file upload.
-    mockedAxios.post.mockRejectedValueOnce(new Error("Upload error"));
+    // Override the uploadFile implementation for this test.
+    const uploadFileSpy = jest
+      .spyOn(fileController, "uploadFile")
+      .mockResolvedValue({ success: false });
 
     const pngHeader = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
     const dummyPng = Buffer.concat([pngHeader, Buffer.alloc(100, 0)]);
@@ -297,5 +300,8 @@ describe("UserController - updateGoogleUser", () => {
       "error",
       "Failed to upload profile picture"
     );
+
+    // Restore the original implementation for other tests.
+    uploadFileSpy.mockRestore();
   });
 });

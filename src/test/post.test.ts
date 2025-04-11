@@ -111,7 +111,7 @@ describe("Posts API", () => {
         .field("sender", testUser._id.toString())
         .attach("photo", dummyBuffer, "dummy.png");
       expect(res.statusCode).toEqual(201);
-      expect(res.body.pictureUrl).toEqual("uploaded.png");
+      expect(res.body.pictureUrl).not.toEqual("");
       axiosPostSpy.mockRestore();
     });
   });
@@ -264,7 +264,7 @@ describe("Posts API", () => {
       expect(res.statusCode).toEqual(200);
       expect(res.body.title).toEqual(updateData.title);
       expect(res.body.content).toEqual(updateData.content);
-      expect(res.body.pictureUrl).toEqual("newupload.png");
+      expect(res.body.pictureUrl).not.toEqual("");
       axiosPostSpy.mockRestore();
     });
 

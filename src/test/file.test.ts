@@ -1,145 +1,133 @@
-// fileRoutes.test.js
-import request from "supertest";
-import express from "express";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// fileHelper.test.ts
 import fs from "fs";
 
-// Import the router (adjust the path as needed)
-import fileRoutes from "../routes/FileRoute";
-import { Request, Response, NextFunction } from "express";
+import {
+  uploadFile,
+  replaceFile,
+  deleteFile,
+} from "../controllers/fileController";
 
-// Mock the auth middleware so it just calls next()
-jest.mock("../controllers/authController", () => ({
-  authMiddleware: (req: Request, res: Response, next: NextFunction): void =>
-    next(),
-}));
+// Mock the fs module methods
+jest.mock("fs");
 
-// Mock fs methods to control file system behaviors in tests
-jest.mock("fs", () => {
-  const originalFs = jest.requireActual("fs");
-  return {
-    ...originalFs,
-    existsSync: jest.fn(() => true),
-    mkdirSync: jest.fn(),
-    access: jest.fn((filePath, mode, callback) => callback(null)),
-    unlink: jest.fn(() => {}),
-  };
-});
+describe("File Helper Functions - Additional Coverage", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
 
-// Create an Express app and mount the routes for testing
-const app = express();
-app.use(express.json());
-app.use("/api/file", fileRoutes);
+  describe("uploadFile", () => {
+    it("should call mkdirSync if the target directory does not exist (line 18)", async () => {
+      const dummyFile: any = {
+        originalname: "test.txt",
+        path: "/tmp/dummy",
+      };
 
-describe("File Routes", () => {
-  describe("POST /api/file", () => {
-    it("should upload a file successfully", async () => {
-      const response = await request(app)
-        .post("/api/file")
-        .attach("file", Buffer.from("dummy content"), "test.txt");
+      // Simulate that the target directory does not exist
+      (fs.existsSync as jest.Mock).mockReturnValue(false);
+      // Spy on mkdirSync to ensure it's called
+      const mkdirSpy = jest
+        .spyOn(fs, "mkdirSync")
+        .mockImplementation(() => undefined);
 
-      expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty("url");
-      // Optionally, verify the filename format (e.g. contains a timestamp and extension)
-      expect(response.body.url).toMatch(/\d+\./);
+      // Simulate a successful rename operation
+      (fs.rename as unknown as jest.Mock).mockImplementation(
+        (oldPath, newPath, cb) => {
+          cb(null);
+        }
+      );
+
+      const result = await uploadFile(dummyFile);
+      expect(mkdirSpy).toHaveBeenCalled();
+      expect(result.success).toBe(true);
     });
 
-    it("should return error if no file is uploaded", async () => {
-      const response = await request(app).post("/api/file");
-      expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty("error", "No file uploaded");
+    it("should return failure if fs.writeFile fails for a file with a buffer (line 39)", async () => {
+      const dummyBuffer = Buffer.from("dummy content");
+      const dummyFile: any = {
+        originalname: "image.png",
+        buffer: dummyBuffer,
+      };
+
+      (fs.existsSync as jest.Mock).mockReturnValue(true);
+      // Simulate writeFile error: trigger error branch in the callback
+      (fs.writeFile as unknown as jest.Mock).mockImplementation(
+        (targetPath, data, cb) => {
+          cb(new Error("write error"));
+        }
+      );
+
+      const result = await uploadFile(dummyFile);
+      expect(result.success).toBe(false);
+      expect(result.fileName).toBeUndefined();
+    });
+
+    it("should return failure when neither file.path nor file.buffer exists (line 47)", async () => {
+      const dummyFile: any = {
+        originalname: "nofile.txt",
+      };
+
+      (fs.existsSync as jest.Mock).mockReturnValue(true);
+
+      const result = await uploadFile(dummyFile);
+      expect(result.success).toBe(false);
+      expect(result.fileName).toBeUndefined();
     });
   });
 
-  describe("PUT /api/file/:filename", () => {
-    beforeEach(() => {
-      // Reset mocks before each test
-      (fs.access as unknown as jest.Mock).mockReset();
-      (fs.unlink as unknown as jest.Mock).mockReset();
-    });
+  describe("replaceFile", () => {
+    it("should log an error if fs.unlink fails when replacing a file (line 55)", async () => {
+      const dummyFile: any = {
+        originalname: "test.txt",
+        path: "/tmp/dummy",
+      };
 
-    it("should replace an existing file successfully", async () => {
-      // Simulate that the old file exists
-      (fs.access as unknown as jest.Mock).mockImplementation(
-        (filePath, mode, callback) => {
-          callback(null);
+      (fs.existsSync as jest.Mock).mockReturnValue(true);
+      // Simulate a successful rename operation for uploadFile
+      (fs.rename as unknown as jest.Mock).mockImplementation(
+        (oldPath, newPath, cb) => {
+          cb(null);
         }
       );
-      // Simulate successful deletion of the old file
-      (fs.unlink as unknown as jest.Mock).mockImplementation(
-        (filePath, callback) => {
-          callback(null);
-        }
+      // Simulate an unlink error when trying to delete the old file
+      (fs.unlink as unknown as jest.Mock).mockImplementation((filePath, cb) => {
+        cb(new Error("unlink error"));
+      });
+
+      // Spy on console.error to check that the error is logged
+      const consoleErrorSpy = jest
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
+      const result = await replaceFile(dummyFile, "oldfile.txt");
+      expect(result.success).toBe(true);
+      expect(result.fileName).toMatch(/\d+\.txt/);
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "Error deleting old file:",
+        expect.any(Error)
       );
 
-      const response = await request(app)
-        .put("/api/file/oldfile.txt")
-        .attach("file", Buffer.from("new content"), "new.txt");
-
-      expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty(
-        "message",
-        "File replaced successfully"
-      );
-      expect(response.body).toHaveProperty("url");
-    });
-
-    it("should return 400 if no new file is uploaded", async () => {
-      const response = await request(app).put("/api/file/oldfile.txt");
-      expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty("error", "No new file uploaded");
-    });
-
-    it("should return 404 if the old file does not exist", async () => {
-      // Simulate that the old file does not exist
-      (fs.access as unknown as jest.Mock).mockImplementation(
-        (filePath, mode, callback) => {
-          callback(new Error("File not found"));
-        }
-      );
-
-      const response = await request(app)
-        .put("/api/file/nonexistent.txt")
-        .attach("file", Buffer.from("new content"), "new.txt");
-
-      expect(response.status).toBe(404);
-      expect(response.body).toHaveProperty("error", "File not found");
+      consoleErrorSpy.mockRestore();
     });
   });
 
-  describe("DELETE /api/file/:filename", () => {
-    beforeEach(() => {
-      (fs.unlink as unknown as jest.Mock).mockReset();
-    });
-
+  describe("deleteFile", () => {
     it("should delete a file successfully", async () => {
-      // Simulate successful file deletion
-      (fs.unlink as unknown as jest.Mock).mockImplementation(
-        (filePath, callback) => {
-          callback(null);
-        }
-      );
+      (fs.unlink as unknown as jest.Mock).mockImplementation((filePath, cb) => {
+        cb(null);
+      });
 
-      const response = await request(app).delete("/api/file/somefile.txt");
-
-      expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty(
-        "message",
-        "File deleted successfully"
-      );
+      const result = await deleteFile("test.txt");
+      expect(result).toBe(true);
     });
 
-    it("should return 500 if error occurs during deletion", async () => {
-      // Simulate an error during file deletion
-      (fs.unlink as unknown as jest.Mock).mockImplementation(
-        (filePath, callback) => {
-          callback(new Error("Deletion error"));
-        }
-      );
+    it("should return false if deletion fails", async () => {
+      (fs.unlink as unknown as jest.Mock).mockImplementation((filePath, cb) => {
+        cb(new Error("deletion error"));
+      });
 
-      const response = await request(app).delete("/api/file/somefile.txt");
-
-      expect(response.status).toBe(500);
-      expect(response.body).toHaveProperty("error", "Error deleting file");
+      const result = await deleteFile("test.txt");
+      expect(result).toBe(false);
     });
   });
 });

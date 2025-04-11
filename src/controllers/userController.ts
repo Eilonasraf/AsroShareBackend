@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
 import userModel, { IUser } from "../models/User";
 import baseController from "./baseController";
-import axios from "axios";
-import FormData from "form-data";
 import { console } from "inspector";
 import { replaceFile, uploadFile } from "./fileController";
 
@@ -35,6 +33,11 @@ class UserController extends baseController<IUser> {
         // Upload without trying to delete anything
         try {
           const fileResponse = await uploadFile(req.file);
+          if (!fileResponse.success) {
+            console.error("Error uploading Google user's picture.");
+            res.status(500).send({ error: "Failed to upload profile picture" });
+            return;
+          }
           profilePictureUrl = fileResponse.fileName;
         } catch (error) {
           console.error("Error uploading Google user's picture:", error);
@@ -99,7 +102,6 @@ class UserController extends baseController<IUser> {
       console.log("Error uploading file");
     }
 
-
     try {
       // If a new file is uploaded, handle it like in the registration process.
       if (req.file) {
@@ -117,7 +119,6 @@ class UserController extends baseController<IUser> {
             profilePictureUrl = fileResponse.fileName;
           } catch (error) {
             console.error("Error uploading file:", error);
-
           }
         } else {
           try {

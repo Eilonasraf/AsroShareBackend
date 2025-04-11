@@ -65,14 +65,16 @@ const initializeServer = async (): Promise<Express> => {
         credentials: true, // Allow cookies from frontend
       })
     );
-    
+
     app.options("*", cors());
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
     // Serve the React frontend
     app.use(express.static(path.join(__dirname, "../../front")));
-    app.get('/', (req, res) => {res.send('Server');});
+    app.get("/", (req, res) => {
+      res.send("Server");
+    });
 
     // Use routers
     app.use("/", indexRouter);
@@ -82,7 +84,13 @@ const initializeServer = async (): Promise<Express> => {
     app.use("/api/file", fileRouter);
     app.use("/api/astronomy", AstronomyApiRoute);
     app.use("/api/users", UserRoute);
-    app.use('/public', express.static(path.join(__dirname, "../../public/")));
+    console.log("Node Env:", process.env.NODE_ENV);
+    if (process.env.NODE_ENV === "production") {
+      app.use("/public", express.static(path.join(__dirname, "../../public/")));
+    } else {
+      app.use("/public", express.static(path.join(__dirname, "../public/")));
+    }
+
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
     app.use("/api/ai", AiRoute);
 
