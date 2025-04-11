@@ -1,6 +1,6 @@
 # AstroShare - Final Course Project
 
-AstroShare is a full-stack web application built using **Node.js (Express)** for the backend and **React with TypeScript** for the frontend. The project was developed as a collaborative final course project and follows a modular, secure, and scalable architecture.
+AstroShare is a full-stack web application built using **Node.js (Express with TypeScript using the MVC model)** for the backend and **React with TypeScript** for the frontend. The project was developed as a collaborative final course project and follows a modular, secure, and scalable architecture.
 
 ## 🌐 Live Access
 The application is deployed in **production mode** with HTTPS and is accessible via the domain provided by our instructor. It runs in the background using **PM2**, ensuring stability even when the terminal is closed.
@@ -9,7 +9,7 @@ The application is deployed in **production mode** with HTTPS and is accessible 
 
 ## 🛠 Tech Stack
 - **Frontend**: React + TypeScript
-- **Backend**: Node.js + Express + TypeScript
+- **Backend**: Node.js + Express (MVC) + TypeScript
 - **Database**: MongoDB (self-hosted with credentials)
 - **Authentication**: JWT (Access + Refresh Tokens) + Google Login
 - **Testing**: Unit tests for all internal APIs using Jest
